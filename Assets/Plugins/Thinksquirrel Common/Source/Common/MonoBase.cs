@@ -2,8 +2,9 @@
 // MonoBase.cs
 // Thinksquirrel Software Common Libraries
 //  
-// Author:
+// Authors:
 //       Josh Montoute <josh@thinksquirrel.com>
+//		 Neil Carter <http://www.nether.org.uk>
 // 
 // Copyright (c) 2011-2012, Thinksquirrel Software, LLC
 // All rights reserved.
@@ -36,7 +37,6 @@ namespace ThinksquirrelSoftware.Common
 	/// <summary>
 	/// Monobehavior base class for all Thinksquirrel Software components. 
 	/// </summary>
-	/*! \author Original code for TSMonoBase.cs (c) 2008 Neil Carter (http://www.nether.org.uk/)*/
 	public abstract class MonoBase : MonoBehaviour
 	{
 		/// <summary>
