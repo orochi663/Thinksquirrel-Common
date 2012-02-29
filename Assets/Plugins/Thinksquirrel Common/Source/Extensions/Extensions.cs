@@ -179,7 +179,61 @@ namespace ThinksquirrelSoftware.Common.Extensions
 				count++;
 			}
 		}
+		
+		/// <summary>
+		/// Gets random keys from a dictionary. (Extension Method)
+		/// </summary>
+		public static IEnumerable<TKey> RandomKeys<TKey, TValue>(this IDictionary<TKey, TValue> dict)
+		{
+		    List<TKey> keys = Enumerable.ToList(dict.Keys);
+		    int size = dict.Count;
+		    while(true)
+		    {
+		        yield return keys[rand.Next(size)];
+		    }
+		}
+		
+		/// <summary>
+		/// Gets random values from a dictionary. (Extension Method)
+		/// </summary>
+		public static IEnumerable<TValue> RandomValues<TKey, TValue>(this IDictionary<TKey, TValue> dict)
+		{
+		    List<TValue> values = Enumerable.ToList(dict.Values);
+		    int size = dict.Count;
+		    while(true)
+		    {
+		        yield return values[rand.Next(size)];
+		    }
+		}
+		
 #endif
+
+		/// <summary>
+		/// Shuffles a list. (Extension Method)
+		/// </summary>		
+		public static void Shuffle<T>(this IList<T> list)  
+		{  
+		    int n = list.Count;  
+		    while (n > 1) {  
+		        n--;  
+		        int k = rand.Next(n + 1);  
+		        T value = list[k];  
+		        list[k] = list[n];  
+		        list[n] = value;  
+		    }  
+		}
+		
+		/// <summary>
+		/// Check to see if an Enum has any flags. (Extension Method)
+		/// </summary>
+		public static bool HasAnyFlag(this Enum value, Enum toTest)
+		{
+		    var val = ((IConvertible)value).ToUInt64(null);
+		    var test = ((IConvertible)toTest).ToUInt64(null);
+
+		    return (val & test) != 0;
+		}
+		
 		/// <summary>
 		/// Generates a timestamp. (Extension Method)
 		/// </summary>
@@ -312,6 +366,32 @@ namespace ThinksquirrelSoftware.Common.Extensions
 			}
 	
 			mesh.tangents = tangents;
+		}
+		
+		/// <summary>
+		/// Gets the width of a pixel in world space (relative to a postion and a camera). (Extension Method)
+		/// </summary>
+		public static float GetPixelWidth(this Camera camera, Vector3 position)
+		{
+			//Get the screen coordinate of some point
+			var screenPos = camera.WorldToScreenPoint(position);
+			var offset = Vector3.zero;
+
+			//Offset by 1 pixel
+			if (screenPos.x > 0)
+				offset = screenPos - Vector3.right;
+			else
+				offset = screenPos + Vector3.right;
+
+			if (screenPos.y > 0)
+				offset = screenPos - Vector3.up;
+			else
+				offset = screenPos + Vector3.up;
+
+			//Get the world coordinate once offset.
+			offset = camera.ScreenToWorldPoint(offset);
+
+			return (camera.transform.InverseTransformPoint(position) - camera.transform.InverseTransformPoint(offset)).magnitude;	
 		}
 	}
 }
