@@ -5,7 +5,7 @@
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 	<ProductVersion>10.0.20506</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
-	<ProjectGuid>{26C6312A-EC0D-20AD-EC5C-36C09FC629C1}</ProjectGuid>
+	<ProjectGuid>{13407B79-81BF-DA11-1E6A-550F6C534D21}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace></RootNamespace>
@@ -48,7 +48,9 @@
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Collections\KdTree.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Collections\Node.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Common\MonoBase.cs" />
-     <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Extensions\Extensions.cs" />
+     <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Extensions\Enumerable.cs" />
+     <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Extensions\Misc.cs" />
+     <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Extensions\Unity.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Serialization\Binary\AltFormatter.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Serialization\Binary\AltSerializeException.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Serialization\Binary\AltSerializer.cs" />
