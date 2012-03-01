@@ -1,5 +1,5 @@
 // Unity extension methods
-// Extensions.cs
+// Unity.cs
 // Thinksquirrel Software Common Libraries
 //  
 // Author:
@@ -27,169 +27,16 @@
 // This file is available at https://github.com/Thinksquirrel-Software/Thinksquirrel-Common
 //
 using UnityEngine;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-#if !UNITY_FLASH
-using System.Linq;
-#endif
 
 namespace ThinksquirrelSoftware.Common.Extensions
 {
 	/// <summary>
-	/// Various extension methods for .NET and Unity.
+	/// Unity extension methods.
 	/// </summary>
-	public static class ExtensionMethods
+	public static class Unity
 	{
-		
 		/// <summary>
-		/// Humanize a string (split it by capital letters)
-		/// </summary>
-		public static string Humanize(this string source)
-		{
-			StringBuilder sb = new StringBuilder();
-			
-			char last = char.MinValue;
-			foreach (char c in source)
-			{
-				if (char.IsLower(last) &&
-				char.IsUpper(c))
-				{
-					sb.Append(' ');
-				}
-				
-				sb.Append(c);
-				
-				last = c;
-			}
-			return sb.ToString();
-		}
-		
-		/// <summary>
-		/// Sanitize a string for output to a file.
-		/// </summary>
-		public static string Sanitize(this string source)
-		{
-			if (string.IsNullOrEmpty(source))
-				return source;
-			
-			string invalidChars = System.Text.RegularExpressions.Regex.Escape( new string( System.IO.Path.GetInvalidFileNameChars() ) );
-			string invalidReStr = string.Format( @"[{0}]+", invalidChars );
-			return System.Text.RegularExpressions.Regex.Replace( source, invalidReStr, "_" );
-		}
-#if !UNITY_FLASH	
-		
-		private static System.Random rand = new System.Random();
-		
-		/// <summary>
-		/// Break a list of items into chunks of a specific size. (Extension Method)
-		/// </summary>
-		public static IEnumerable<IEnumerable<T>> Chunk<T>(this IEnumerable<T> source, int chunksize)
-		{
-			while (source.Any())
-			{
-				yield return source.Take(chunksize);
-				source = source.Skip(chunksize);
-			}
-		}
-
-		/// <summary>
-		/// Gets random keys from a dictionary. (Extension Method)
-		/// </summary>
-		public static IEnumerable<TKey> RandomKeys<TKey, TValue>(this IDictionary<TKey, TValue> dict)
-		{
-		    List<TKey> keys = Enumerable.ToList(dict.Keys);
-		    int size = dict.Count;
-		    while(true)
-		    {
-		        yield return keys[rand.Next(size)];
-		    }
-		}
-				
-		/// <summary>
-		/// Gets random values from a dictionary. (Extension Method)
-		/// </summary>
-		public static IEnumerable<TValue> RandomValues<TKey, TValue>(this IDictionary<TKey, TValue> dict)
-		{
-		    List<TValue> values = Enumerable.ToList(dict.Values);
-		    int size = dict.Count;
-		    while(true)
-		    {
-		        yield return values[rand.Next(size)];
-		    }
-		}
-				
-		/// <summary>
-		/// Iterate the specified enumerable and callback. (Extension Method)
-		/// </summary>
-		/// <param name='enumerable'>
-		/// Enumerable.
-		/// </param>
-		/// <param name='callback'>
-		/// Callback.
-		/// </param>
-		/// <typeparam name='T'>
-		/// The 1st type parameter.
-		/// </typeparam>
-		/// <exception cref='ArgumentNullException'>
-		/// Is thrown when an argument passed to a method is invalid because it is <see langword="null" /> .
-		/// </exception>
-		public static void Iterate<T>(this IEnumerable<T> enumerable, Action<T> callback)
-		{
-			if (enumerable == null)
-			{
-				throw new ArgumentNullException("enumerable");
-			}
-			
-			IterateHelper(enumerable, (x, i) => callback(x));
-		}
-			
-		/// <summary>
-		/// Iterate the specified enumerable and callback. (Extension Method)
-		/// </summary>
-		/// <param name='enumerable'>
-		/// Enumerable.
-		/// </param>
-		/// <param name='callback'>
-		/// Callback.
-		/// </param>
-		/// <typeparam name='T'>
-		/// The 1st type parameter.
-		/// </typeparam>
-		/// <exception cref='ArgumentNullException'>
-		/// Is thrown when an argument passed to a method is invalid because it is <see langword="null" /> .
-		/// </exception>
-		public static void Iterate<T>(this IEnumerable<T> enumerable, Action<T,int> callback)
-		{
-			if (enumerable == null)
-			{
-				throw new ArgumentNullException("enumerable");
-			}
-			
-			IterateHelper(enumerable, callback);
-		}
-			
-		private static void IterateHelper<T>(this IEnumerable<T> enumerable, Action<T,int> callback)
-		{
-			int count = 0;
-			foreach (var cur in enumerable)
-			{
-				callback(cur, count);
-				count++;
-			}
-		}
-#endif
-		/// <summary>
-		/// Generates a timestamp. (Extension Method)
-		/// </summary>
-		public static string GetTimestamp(this System.DateTime value)
-		{
-			return value.ToString("yyyyMMddHHmmssffff");
-		}
-		
-		/// <summary>
-		/// Determines whether a Vector3 is valid (all values are not equal to Infinity or NaN)
+		/// Determines whether a Vector3 is valid (all values are not equal to Infinity or NaN). (Extension Method)
 		/// </summary>
 		public static bool IsValid(this Vector3 input)
 		{
@@ -202,7 +49,7 @@ namespace ThinksquirrelSoftware.Common.Extensions
 		}
 		
 		/// <summary>
-		/// Determines whether a Vector2 is valid (all values are not equal to Infinity or NaN)
+		/// Determines whether a Vector2 is valid (all values are not equal to Infinity or NaN). (Extension Method)
 		/// </summary>
 		public static bool IsValid(this Vector2 input)
 		{
@@ -213,7 +60,7 @@ namespace ThinksquirrelSoftware.Common.Extensions
 		}
 		
 		/// <summary>
-		/// Calculates the torque applied to a rigidbody.
+		/// Calculates the torque applied to a rigidbody. (Extension Method)
 		/// </summary>
 		public static Vector3 CalculateTorque(this Rigidbody rigidbody, Vector3 force, Vector3 position)
 		{
@@ -222,7 +69,7 @@ namespace ThinksquirrelSoftware.Common.Extensions
 		}
 		
 		/// <summary>
-		/// Calculates the force and torque applied to a rigidbody.
+		/// Calculates the force and torque applied to a rigidbody. (Extension Method)
 		/// </summary>
 		public static Vector3 CalculateForceAndTorque(this Rigidbody rigidbody, Vector3 force, Vector3 position)
 		{
@@ -230,7 +77,7 @@ namespace ThinksquirrelSoftware.Common.Extensions
 		}
 		
 		/// <summary>
-		/// Calculates the torque applied to a transform.
+		/// Calculates the torque applied to a transform. (Extension Method)
 		/// </summary>
 		public static Vector3 CalculateTorque(this Transform transform, Vector3 force, Vector3 position)
 		{
@@ -239,7 +86,7 @@ namespace ThinksquirrelSoftware.Common.Extensions
 		}
 		
 		/// <summary>
-		/// Calculates the force and torque applied to a transform.
+		/// Calculates the force and torque applied to a transform. (Extension Method)
 		/// </summary>
 		public static Vector3 CalculateForceAndTorque(this Transform transform, Vector3 force, Vector3 position)
 		{
@@ -312,6 +159,32 @@ namespace ThinksquirrelSoftware.Common.Extensions
 			}
 	
 			mesh.tangents = tangents;
+		}
+		
+		/// <summary>
+		/// Gets the width of a pixel at a world space position, relative to a camera. (Extension Method)
+		/// </summary>
+		public static float GetPixelWidth(this Camera camera, Vector3 position)
+		{
+			//Get the screen coordinate of some point
+			var screenPos = camera.WorldToScreenPoint(position);
+			var offset = Vector3.zero;
+
+			//Offset by 1 pixel
+			if (screenPos.x > 0)
+				offset = screenPos - Vector3.right;
+			else
+				offset = screenPos + Vector3.right;
+
+			if (screenPos.y > 0)
+				offset = screenPos - Vector3.up;
+			else
+				offset = screenPos + Vector3.up;
+
+			//Get the world coordinate once offset.
+			offset = camera.ScreenToWorldPoint(offset);
+
+			return (camera.transform.InverseTransformPoint(position) - camera.transform.InverseTransformPoint(offset)).magnitude;	
 		}
 	}
 }

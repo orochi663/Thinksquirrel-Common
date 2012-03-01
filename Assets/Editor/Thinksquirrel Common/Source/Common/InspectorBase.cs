@@ -36,9 +36,12 @@ namespace ThinksquirrelSoftware.Common.Editor
 	{
 		protected bool pinState;
 	
-		protected abstract string inspectorName
+		protected virtual string inspectorName
 		{
-			get;
+			get
+			{
+				return "Edit Inspector";
+			}
 		}
 		protected abstract void Initialize();
 		

@@ -1,5 +1,5 @@
-// Collection serialization extension methods
-// CollectionSerialization.cs
+// XML serialization extension methods
+// XmlSerialization.cs
 // Thinksquirrel Software Common Libraries
 //  
 // Author:
@@ -26,7 +26,7 @@
 //
 // This file is available at https://github.com/Thinksquirrel-Software/Thinksquirrel-Common
 //
-#if !UNITY_FLASH || UNITY_EDITOR
+#if !COMPACT
 using UnityEngine;
 using System;
 using System.IO;
@@ -35,9 +35,15 @@ using System.Xml.Serialization;
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>
+/// Xml serialization classes.
+/// </summary>
 namespace ThinksquirrelSoftware.Common.Serialization.Xml
 {
-	public static class CollectionSerializationExtensions
+	/// <summary>
+	/// Xml serialization extension methods.
+	/// </summary>
+	public static class XmlSerialization
 	{
 		private static XmlSerializer MakeXmlSerializer<T> ()
 		{
@@ -125,8 +131,8 @@ namespace ThinksquirrelSoftware.Common.Serialization.Xml
 	/// <summary>
 	/// Dictionary wrapper class for serialization.
 	/// </summary>
-	[System.Serializable]
-	public class DictionaryWrapper<TKey, TValue> : ISerializable
+	[Serializable]
+	internal class DictionaryWrapper<TKey, TValue> : ISerializable
 	{
 		public TKey[] Keys { get; set; }
 		public TValue[] Values { get; set; }

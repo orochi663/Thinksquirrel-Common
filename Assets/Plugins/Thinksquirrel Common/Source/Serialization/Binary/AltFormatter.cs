@@ -27,10 +27,17 @@
 //
 // This file is available at https://github.com/Thinksquirrel-Software/Thinksquirrel-Common
 //
+#if !COMPACT
 using System;
 using System.Collections.Generic;
 using System.Text;
 
+/// <summary>
+/// Binary serialization classes.
+/// </summary>
+/// <remarks>
+/// Ported from the AltSerializer project - <http://www.codeproject.com/Articles/15375/AltSerializer-An-Alternate-Binary-Serializer>.
+/// </remarks>
 namespace ThinksquirrelSoftware.Common.Serialization.Binary
 {
     public class AltFormatter : System.Runtime.Serialization.IFormatterConverter
@@ -125,3 +132,4 @@ namespace ThinksquirrelSoftware.Common.Serialization.Binary
         #endregion
     }
 }
+#endif

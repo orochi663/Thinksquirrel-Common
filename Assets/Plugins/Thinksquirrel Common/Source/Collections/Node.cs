@@ -26,6 +26,7 @@
 //
 // This file is available at https://github.com/Thinksquirrel-Software/Thinksquirrel-Common
 //
+#if !COMPACT
 using System;
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -96,8 +97,7 @@ namespace ThinksquirrelSoftware.Common.Collections
 			mEnabled = toggle;
 		}
 		
-	}
-	
+	}	
 	public class NodeList<T> : List<Node<T>>
 	{
 	    public NodeList() : base() { }
@@ -117,7 +117,6 @@ namespace ThinksquirrelSoftware.Common.Collections
 	        return null;
 	    }
 	}
-	
 	public class Graph<T> : IEnumerable<T>
 	{
 		private bool mChanged;
@@ -288,3 +287,4 @@ namespace ThinksquirrelSoftware.Common.Collections
 		}
 	}
 }
+#endif
