@@ -27,6 +27,7 @@
 //
 // This file is available at https://github.com/Thinksquirrel-Software/Thinksquirrel-Common
 //
+#if !COMPACT
 using UnityEngine;
 using UnityEditor;
 using System.Collections;
@@ -371,3 +372,4 @@ namespace ThinksquirrelSoftware.Common.Editor
 	    
 	}
 }
+#endif

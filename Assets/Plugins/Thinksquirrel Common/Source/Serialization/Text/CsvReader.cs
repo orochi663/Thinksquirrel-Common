@@ -26,6 +26,7 @@
 //
 // This file is available at https://github.com/Thinksquirrel-Software/Thinksquirrel-Common
 //
+#if !COMPACT
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -272,3 +273,4 @@ namespace ThinksquirrelSoftware.Common.Serialization.Text
   }
 
 }
+#endif

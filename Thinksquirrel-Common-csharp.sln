@@ -23,7 +23,7 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-				GlobalSection(MonoDevelopProperties) = preSolution
+					GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Assembly-CSharp-firstpass.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
@@ -43,8 +43,10 @@ Global
 		$0.ChangeLogPolicy = $4
 		$4.UpdateMode = Nearest
 		$4.MessageStyle = $5
-		$5.LineAlign = 0
+		$5.LastFilePostfix = "@:\n  "
 		$4.inheritsSet = Mono
+		$0.VersionControlPolicy = $6
+		$6.inheritsSet = Mono
 	EndGlobalSection
 
 EndGlobal

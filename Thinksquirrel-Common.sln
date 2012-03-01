@@ -1,9 +1,9 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-firstpass", "Assembly-CSharp-firstpass.csproj", "{13407B79-81BF-DA11-1E6A-550F6C534D21}"
+# Visual Studio 2008
+
+Project("{978FC7D7-AD70-4D13-AC0A-634859D4F522}") = "Thinksquirrel-Common", "Assembly-CSharp-firstpass.csproj", "{13407B79-81BF-DA11-1E6A-550F6C534D21}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{CAC3CB3B-C301-76BF-4F2A-0ED55038AD38}"
+Project("{978FC7D7-AD70-4D13-AC0A-634859D4F522}") = "Thinksquirrel-Common", "Assembly-CSharp-Editor.csproj", "{CAC3CB3B-C301-76BF-4F2A-0ED55038AD38}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,7 +20,10 @@ Global
 		{CAC3CB3B-C301-76BF-4F2A-0ED55038AD38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAC3CB3B-C301-76BF-4F2A-0ED55038AD38}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+				GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Assembly-CSharp-firstpass.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
@@ -45,7 +48,5 @@ Global
 		$0.VersionControlPolicy = $6
 		$6.inheritsSet = Mono
 	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
+
 EndGlobal
