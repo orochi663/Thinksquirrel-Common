@@ -1,4 +1,4 @@
-// Editor Obj Exporter
+// Editor OBJ Exporter
 // EditorObjExporter.cs
 // Thinksquirrel Software Common Libraries
 //  

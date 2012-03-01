@@ -71,12 +71,13 @@
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Serialization\Binary\SerializerCache.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Serialization\Text\CsvReader.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Serialization\Text\CsvWriter.cs" />
-     <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Serialization\Xml\CollectionSerialization.cs" />
+     <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Serialization\Xml\XmlSerialization.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Threading\Dispatcher.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Threading\Task.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Threading\TaskDistributor.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Threading\Thread.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Threading\_ThreadUtility.cs" />
+     <None Include="Assets\Plugins\Thinksquirrel Common\Documentation\CHANGELOG.txt" />
      <None Include="Assets\Plugins\Thinksquirrel Common\Documentation\LICENSE.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

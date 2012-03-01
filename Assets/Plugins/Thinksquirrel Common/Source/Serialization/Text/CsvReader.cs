@@ -32,8 +32,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ThinksquirrelSoftware.Common.Serialization.Text {
-
+/// <summary>
+/// Text serialization classes.
+/// </summary>
+namespace ThinksquirrelSoftware.Common.Serialization.Text
+{
   /// <summary>
   /// A data-reader style interface for reading Csv (and otherwise-char-separated) files.
   /// </summary>
@@ -232,7 +235,6 @@ namespace ThinksquirrelSoftware.Common.Serialization.Text {
       GC.SuppressFinalize(this);
     }
   }
-
 
   /// <summary>
   /// Exception class for CsvReader exceptions.

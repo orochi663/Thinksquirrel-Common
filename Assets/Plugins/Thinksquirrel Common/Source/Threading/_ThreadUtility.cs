@@ -26,7 +26,7 @@
 //
 // This file is available at https://github.com/Thinksquirrel-Software/Thinksquirrel-Common
 //
-#if !UNITY_FLASH
+#if !COMPACT
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;

@@ -27,8 +27,8 @@
 //
 // This file is available at https://github.com/Thinksquirrel-Software/Thinksquirrel-Common
 //
+#if !COMPACT
 using UnityEngine;
-using System.Collections;
 
 namespace ThinksquirrelSoftware.Common.Collections
 {
@@ -45,7 +45,6 @@ namespace ThinksquirrelSoftware.Common.Collections
 	/// array of points is available for the lifetime of the tree, and the index refers to that
 	/// array.
 	/// </remarks>
-	/*! \author Original code for KDTree.cs (c) 2009 A Stark (http://forum.unity3d.com/members/81-andeeee)*/
 	public class KdTree {
 
 /*! \cond PRIVATE */
@@ -308,3 +307,4 @@ namespace ThinksquirrelSoftware.Common.Collections
 		}
 	}
 }
+#endif

@@ -47,6 +47,7 @@
      <Compile Include="Assets\Editor\Thinksquirrel Common\Source\Common\EditorObjExporter.cs" />
      <Compile Include="Assets\Editor\Thinksquirrel Common\Source\Common\InspectorBase.cs" />
      <Compile Include="Assets\Editor\Thinksquirrel Common\Source\Common\UndoManager.cs" />
+     <None Include="Assets\Plugins\Thinksquirrel Common\Documentation\CHANGELOG.txt" />
      <None Include="Assets\Plugins\Thinksquirrel Common\Documentation\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>

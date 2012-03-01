@@ -26,6 +26,7 @@
 //
 // This file is available at https://github.com/Thinksquirrel-Software/Thinksquirrel-Common
 //
+#if !COMPACT
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -168,3 +169,4 @@ namespace ThinksquirrelSoftware.Common.Extensions
 		}
 	}
 }
+#endif
