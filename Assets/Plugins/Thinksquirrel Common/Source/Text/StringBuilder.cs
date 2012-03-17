@@ -64,7 +64,15 @@ namespace ThinksquirrelSoftware.Common.Text
 			charList = new List<char>(capacity);
 			Append(value.Substring(startIndex, length));
 		}
-				
+		
+		public int Length
+		{
+			get
+			{
+				return charList.Count;
+			}
+		}
+		
 		public StringBuilder Append(string value)
 		{
 			foreach(char c in value)
