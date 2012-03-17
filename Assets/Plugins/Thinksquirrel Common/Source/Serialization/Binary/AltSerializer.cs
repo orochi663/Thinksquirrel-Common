@@ -391,13 +391,14 @@ namespace ThinksquirrelSoftware.Common.Serialization.Binary
             metaData.ObjectType = type;
             metaData.Fields = serializedFields.ToArray();
             metaData.Properties = serializedProperties.ToArray();
-
+			
+#if false
             if (type.IsGenericType)
             {
                 metaData.GenericTypeDefinition = type.GetGenericTypeDefinition();
                 metaData.GenericParameters = type.GetGenericArguments();
             }
-
+#endif
             if (type.GetInterface(typeof(ISerializable).Name) != null)
             {
                 // Indicate that the ISerializable interface is available.
