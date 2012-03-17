@@ -1,8 +1,8 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Plugins/Thinksquirrel Common/Source/Text/StringBuilder.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Plugins/Thinksquirrel Common/Source/Serialization/Binary/AltSerializer.cs">
     <Files>
-      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Text/StringBuilder.cs" Line="148" Column="27" />
+      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Serialization/Binary/AltSerializer.cs" Line="401" Column="7" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -26,11 +26,11 @@
                     <Node name="Common" expanded="True" />
                     <Node name="Extensions" expanded="True" />
                     <Node name="Serialization" expanded="True">
-                      <Node name="Binary" expanded="True" />
+                      <Node name="Binary" expanded="True">
+                        <Node name="AltSerializer.cs" selected="True" />
+                      </Node>
                     </Node>
-                    <Node name="Text" expanded="True">
-                      <Node name="StringBuilder.cs" selected="True" />
-                    </Node>
+                    <Node name="Text" expanded="True" />
                     <Node name="Threading" expanded="True" />
                   </Node>
                 </Node>
