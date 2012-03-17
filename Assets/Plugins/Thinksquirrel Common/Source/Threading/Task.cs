@@ -55,7 +55,7 @@ namespace ThinksquirrelSoftware.Common.Threading
         {
             get
 			{
-				return abortEvent.WaitOne(0); 
+				return abortEvent.WaitOne(0, false); 
 			}
         }
 
@@ -66,7 +66,7 @@ namespace ThinksquirrelSoftware.Common.Threading
         {
             get 
 			{
-				return endedEvent.WaitOne(0); 
+				return endedEvent.WaitOne(0, false); 
 			}
         }
 
@@ -79,7 +79,7 @@ namespace ThinksquirrelSoftware.Common.Threading
         {
             get
             {
-				return endedEvent.WaitOne(0) && !abortEvent.WaitOne(0);
+				return endedEvent.WaitOne(0, false) && !abortEvent.WaitOne(0, false);
             }
         }
 
@@ -91,7 +91,7 @@ namespace ThinksquirrelSoftware.Common.Threading
         {
             get
             {
-				return endedEvent.WaitOne(0) && abortEvent.WaitOne(0);
+				return endedEvent.WaitOne(0, false) && abortEvent.WaitOne(0, false);
             }
         }
 
@@ -138,7 +138,7 @@ namespace ThinksquirrelSoftware.Common.Threading
 		/// <param name="seconds">Time in seconds this method will max wait.</param>
         public void WaitForSeconds(float seconds)
         {
-			endedEvent.WaitOne(TimeSpan.FromSeconds(seconds));
+			endedEvent.WaitOne(TimeSpan.FromSeconds(seconds), false);
         }
 
 		/// <summary>

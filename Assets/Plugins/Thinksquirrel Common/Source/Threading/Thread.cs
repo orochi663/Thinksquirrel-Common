@@ -83,7 +83,7 @@ namespace ThinksquirrelSoftware.Common.Threading
 		/// <summary>
 		/// Returns true if the thread should stop working.
 		/// </summary>
-        public bool ShouldStop { get { return exitEvent.WaitOne(0); } }
+        public bool ShouldStop { get { return exitEvent.WaitOne(0, false); } }
 
 		/// <summary>
 		/// Starts the thread.

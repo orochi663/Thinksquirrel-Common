@@ -27,7 +27,7 @@
 // This file is available at https://github.com/Thinksquirrel-Software/Thinksquirrel-Common
 //
 using System;
-using System.Text;
+using ThinksquirrelSoftware.Common.Text;
 
 namespace ThinksquirrelSoftware.Common.Extensions
 {

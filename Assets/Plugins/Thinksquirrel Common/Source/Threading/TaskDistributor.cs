@@ -88,7 +88,7 @@ namespace ThinksquirrelSoftware.Common.Threading
 			: base()
 		{
 			if (workerThreadCount <= 0)
-				workerThreadCount = Environment.ProcessorCount * 3;
+				workerThreadCount = UnityEngine.SystemInfo.processorCount * 3;
 
 			workerThreads = new TaskWorker[workerThreadCount];
 			lock (workerThreads)
@@ -188,7 +188,7 @@ namespace ThinksquirrelSoftware.Common.Threading
 
         protected override void Do()
         {
-            while (!exitEvent.WaitOne(0))
+            while (!exitEvent.WaitOne(0, false))
             {
                 if (!Dispatcher.ProcessNextTask())
                 {

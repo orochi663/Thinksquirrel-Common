@@ -287,7 +287,7 @@ namespace ThinksquirrelSoftware.Common.Threading
 		/// </summary>
         public void ProcessTasks()
         {
-			if (dataEvent.WaitOne(0))
+			if (dataEvent.WaitOne(0, false))
 				ProcessTasksInternal();
         }
 
