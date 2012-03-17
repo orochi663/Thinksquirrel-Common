@@ -73,6 +73,13 @@ namespace ThinksquirrelSoftware.Common.Text
 			}
 		}
 		
+		public char this[int index]
+		{
+			get
+			{
+				return charList[index];
+			}
+		}
 		public StringBuilder Append(string value)
 		{
 			foreach(char c in value)
@@ -113,6 +120,13 @@ namespace ThinksquirrelSoftware.Common.Text
 		public StringBuilder Remove(int index)
 		{
 			charList.RemoveAt(index);
+			
+			return this;
+		}
+		
+		public StringBuilder Remove(int index, int count)
+		{
+			charList.RemoveRange(index, count);
 			
 			return this;
 		}
