@@ -140,5 +140,12 @@ namespace ThinksquirrelSoftware.Common.Text
 		{
 			return new string(charList.ToArray());
 		}
+		
+		public string ToString(int index, int count)
+		{
+			char[] arr = new char[count];
+			charList.CopyTo(index, arr, 0, count);
+			return new string(arr);
+		}
 	}
 }
