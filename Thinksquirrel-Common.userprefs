@@ -1,8 +1,10 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Plugins/Thinksquirrel Common/Source/Serialization/Binary/AltSerializer.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Plugins/Thinksquirrel Common/Source/Extensions/Enumerable.cs">
     <Files>
-      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Serialization/Binary/AltSerializer.cs" Line="401" Column="7" />
+      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Extensions/Enumerable.cs" Line="90" Column="52" />
+      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/ObjectModel/IMonoBehaviour.cs" Line="51" Column="24" />
+      <File FileName="Assets/Editor/Thinksquirrel Common/Source/Common/EditorObjExporter.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -24,11 +26,12 @@
                 <Node name="Thinksquirrel Common" expanded="True">
                   <Node name="Source" expanded="True">
                     <Node name="Common" expanded="True" />
-                    <Node name="Extensions" expanded="True" />
+                    <Node name="Extensions" expanded="True">
+                      <Node name="Enumerable.cs" selected="True" />
+                    </Node>
+                    <Node name="ObjectModel" expanded="True" />
                     <Node name="Serialization" expanded="True">
-                      <Node name="Binary" expanded="True">
-                        <Node name="AltSerializer.cs" selected="True" />
-                      </Node>
+                      <Node name="Binary" expanded="True" />
                     </Node>
                     <Node name="Text" expanded="True" />
                     <Node name="Threading" expanded="True" />

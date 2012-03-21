@@ -51,6 +51,7 @@
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Extensions\Enumerable.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Extensions\Misc.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Extensions\Unity.cs" />
+     <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\ObjectModel\IMonoBehaviour.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Serialization\Binary\AltFormatter.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Serialization\Binary\AltSerializeException.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Serialization\Binary\AltSerializer.cs" />
