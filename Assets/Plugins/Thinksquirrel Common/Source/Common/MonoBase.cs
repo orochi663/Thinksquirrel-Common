@@ -28,6 +28,7 @@
 // This file is available at https://github.com/Thinksquirrel-Software/Thinksquirrel-Common
 //
 using UnityEngine;
+using ThinksquirrelSoftware.Common.ObjectModel;
 
 /// <summary>
 /// Thinksquirrel Software common Unity libraries.
@@ -106,5 +107,19 @@ namespace ThinksquirrelSoftware.Common
 	    {
 	        return (T)MonoBehaviour.Instantiate(original);
 	    }
+		
+		/// <summary>
+		/// Gets the component from its interface type.
+		/// </summary>
+		/// <returns>
+		/// The component (as its interface type).
+		/// </returns>
+		/// <typeparam name='T'>
+		/// The interface type of the component. Must be an IMonoBehaviour.
+		/// </typeparam>
+		public T GetComponentFromInterface<T>() where T : class, IMonoBehaviour
+		{
+			return Extensions.Unity.GetComponentFromInterface<T>(this);
+		}
 	}
 }
