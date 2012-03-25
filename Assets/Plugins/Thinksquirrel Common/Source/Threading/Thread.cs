@@ -28,16 +28,13 @@
 // This file is available at https://github.com/Thinksquirrel-Software/Thinksquirrel-Common
 //
 #if !COMPACT
+using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Threading;
 
 namespace ThinksquirrelSoftware.Common.Threading
 {
-	/// <summary>
-	/// Base class for threads.
-	/// </summary>
-	/*! \author Original Unity Thread Helper classes (c) 2011 Marrrk (http://forum.unity3d.com/threads/90128-Unity-Threading-Helper)*/
 	public abstract class ThreadBase : IDisposable
 	{
         protected Dispatcher targetDispatcher;
@@ -206,14 +203,61 @@ namespace ThinksquirrelSoftware.Common.Threading
             task.WaitForSeconds(timeOutSeconds);
         }
 
+        /// <summary>
+        /// Dispatches the given task to the target Dispatcher (default: the main Dispatcher).
+        /// </summary>
+        /// <param name="taskBase">The task to process at the dispatchers thread.</param>
+        /// <returns>The new task.</returns>
+        public TaskBase Dispatch(TaskBase taskBase)
+        {
+            return targetDispatcher.Dispatch(taskBase);
+        }
+
+        /// <summary>
+        /// Dispatches the given task to the target Dispatcher (default: the main Dispatcher).
+        /// This method will wait for the task completion.
+        /// </summary>
+        /// <param name="taskBase">The task to process at the dispatchers thread.</param>
+        public void DispatchAndWait(TaskBase taskBase)
+        {
+            var task = this.Dispatch(taskBase);
+            task.Wait();
+        }
+
+        /// <summary>
+        /// Dispatches the given task to the target Dispatcher (default: the main Dispatcher).
+        /// This method will wait for the task completion or the timeout.
+        /// </summary>
+        /// <param name="taskBase">The task to process at the dispatchers thread.</param>
+        /// <param name="timeOutSeconds">Time in seconds after the waiting process will stop.</param>
+        public void DispatchAndWait(TaskBase taskBase, float timeOutSeconds)
+        {
+            var task = this.Dispatch(taskBase);
+            task.WaitForSeconds(timeOutSeconds);
+        }
+
         protected void DoInternal()
         {
             currentThread = this;
-            Do();
+            var enumerator = Do();
+            if (enumerator == null)
+            {
+                return;
+            }
+
+            do
+            {
+                var task = (TaskBase)enumerator.Current;
+                if (task != null)
+                {
+                    this.DispatchAndWait(task);
+                }
+            }
+            while (enumerator.MoveNext());
         }
-/*! \cond PRIVATE */
-        protected abstract void Do();
-/*! \endcond */
+
+        protected abstract IEnumerator Do();
+
         #region IDisposable Members
 
 		/// <summary>
@@ -226,30 +270,26 @@ namespace ThinksquirrelSoftware.Common.Threading
 
         #endregion
     }
-	
-	/// <summary>
-	/// An action thread.
-	/// </summary>
-	/*! \author Original Unity Thread Helper classes (c) 2011 Marrrk (http://forum.unity3d.com/threads/90128-Unity-Threading-Helper)*/
+
     public class ActionThread : ThreadBase
     {
         private Action<ActionThread> action;
 
-		/// <summary>
-		/// Creates a new Thread which runs the given action.
-		/// The thread will start running after creation.
-		/// </summary>
-		/// <param name="action">The action to run.</param>
+        /// <summary>
+        /// Creates a new Thread which runs the given action.
+        /// The thread will start running after creation.
+        /// </summary>
+        /// <param name="action">The action to run.</param>
         public ActionThread(Action<ActionThread> action)
             : this(action, true)
         {
         }
 
-		/// <summary>
-		/// Creates a new Thread which runs the given action.
-		/// </summary>
-		/// <param name="action">The action to run.</param>
-		/// <param name="autoStartThread">Should the thread start after creation.</param>
+        /// <summary>
+        /// Creates a new Thread which runs the given action.
+        /// </summary>
+        /// <param name="action">The action to run.</param>
+        /// <param name="autoStartThread">Should the thread start after creation.</param>
         public ActionThread(Action<ActionThread> action, bool autoStartThread)
             : base(Dispatcher.Current, false)
         {
@@ -257,12 +297,45 @@ namespace ThinksquirrelSoftware.Common.Threading
             if (autoStartThread)
                 Start();
         }
-/*! \cond PRIVATE */
-        protected override void Do()
+
+        protected override IEnumerator Do()
         {
             action(this);
+            return null;
         }
-/*! \endcond */
-	}
+    }
+
+    public class EnumeratableActionThread : ThreadBase
+    {
+        private Func<ThreadBase, IEnumerator> enumeratableAction;
+
+        /// <summary>
+        /// Creates a new Thread which runs the given enumeratable action.
+        /// The thread will start running after creation.
+        /// </summary>
+        /// <param name="action">The enumeratable action to run.</param>
+        public EnumeratableActionThread(Func<ThreadBase, IEnumerator> enumeratableAction)
+            : this(enumeratableAction, true)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new Thread which runs the given enumeratable action.
+        /// </summary>
+        /// <param name="action">The enumeratable action to run.</param>
+        /// <param name="autoStartThread">Should the thread start after creation.</param>
+        public EnumeratableActionThread(Func<ThreadBase, IEnumerator> enumeratableAction, bool autoStartThread)
+            : base(Dispatcher.Current, false)
+        {
+            this.enumeratableAction = enumeratableAction;
+            if (autoStartThread)
+                Start();
+        }
+
+        protected override IEnumerator Do()
+        {
+            return enumeratableAction(this);
+        }
+    }
 }
 #endif
