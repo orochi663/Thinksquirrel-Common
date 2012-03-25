@@ -76,7 +76,20 @@ namespace ThinksquirrelSoftware.Common.Extensions
 		    {
 		        yield return values[rand.Next(size)];
 		    }
+		}    
+		
+		/// <summary>
+		/// Gets a random element in an enumerable. (Extension Method)
+		/// </summary>
+		public static T GetRandomElement<T>(this IEnumerable<T> enumerable)
+		{
+			// If there are no elements in the collection, return the default value of T
+			if (enumerable.Count() == 0)
+				return default(T);
+		
+			return enumerable.ElementAt(rand.Next(enumerable.Count()));
 		}
+
 				
 		/// <summary>
 		/// Iterate through specified enumerable and invoke an action. (Extension Method)

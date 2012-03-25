@@ -32,10 +32,10 @@ using System;
 using System.Runtime.InteropServices;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.Reflection;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Text;
 
 namespace ThinksquirrelSoftware.Common.Serialization.Binary
 {    
@@ -251,11 +251,11 @@ namespace ThinksquirrelSoftware.Common.Serialization.Binary
             set { _serializeProperties = value; }
         }
 
-        private Encoding _encoding = Encoding.Unicode;
+        private Encoding _encoding = System.Text.Encoding.Unicode;
         /// <summary>
         /// Gets or sets the string encoding to use.
         /// </summary>
-        public Encoding Encoding
+        public System.Text.Encoding Encoding
         {
             get { return _encoding; }
             set { _encoding = value; }
@@ -329,8 +329,9 @@ namespace ThinksquirrelSoftware.Common.Serialization.Binary
             {
                 return MetaDataHash[type];
             }
-
-            if (type.GetCustomAttributes(typeof(CompiledSerializerAttribute), true).Length != 0)
+			
+#if false
+           if (type.GetCustomAttributes(typeof(CompiledSerializerAttribute), true).Length != 0)
             {
                 // Compiled Serializer flag specified.
                 ObjectMetaData cmetadata = new ObjectMetaData(this);
@@ -339,7 +340,8 @@ namespace ThinksquirrelSoftware.Common.Serialization.Binary
                 MetaDataHash[type] = cmetadata;
                 return cmetadata;
             }
-
+#endif
+			
             if (type.GetInterface(typeof(IAltSerializable).Name) != null)
             {
                 // This will only be called using interface methods
@@ -389,13 +391,14 @@ namespace ThinksquirrelSoftware.Common.Serialization.Binary
             metaData.ObjectType = type;
             metaData.Fields = serializedFields.ToArray();
             metaData.Properties = serializedProperties.ToArray();
-
+			
+#if false
             if (type.IsGenericType)
             {
                 metaData.GenericTypeDefinition = type.GetGenericTypeDefinition();
                 metaData.GenericParameters = type.GetGenericArguments();
             }
-
+#endif
             if (type.GetInterface(typeof(ISerializable).Name) != null)
             {
                 // Indicate that the ISerializable interface is available.

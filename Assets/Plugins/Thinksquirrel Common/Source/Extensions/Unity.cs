@@ -27,6 +27,7 @@
 // This file is available at https://github.com/Thinksquirrel-Software/Thinksquirrel-Common
 //
 using UnityEngine;
+using ThinksquirrelSoftware.Common.ObjectModel;
 
 namespace ThinksquirrelSoftware.Common.Extensions
 {
@@ -185,6 +186,52 @@ namespace ThinksquirrelSoftware.Common.Extensions
 			offset = camera.ScreenToWorldPoint(offset);
 
 			return (camera.transform.InverseTransformPoint(position) - camera.transform.InverseTransformPoint(offset)).magnitude;	
+		}
+		
+		/// <summary>
+		/// Gets the component from its interface type.
+		/// </summary>
+		/// <returns>
+		/// The component (as its interface type).
+		/// </returns>
+		/// <typeparam name='T'>
+		/// The interface type of the component. Must be an IMonoBehaviour.
+		/// </typeparam>
+		public static T GetComponentFromInterface<T>(this GameObject gameObject) where T : class, IMonoBehaviour
+		{
+			var components = gameObject.GetComponents<MonoBehaviour>();
+			foreach(var c in components)
+			{
+				if (typeof(T).IsAssignableFrom(c.GetType()))
+				{
+					return c as T;
+				}
+			}
+			
+			return null;
+		}
+		
+		/// <summary>
+		/// Gets the component from its interface type.
+		/// </summary>
+		/// <returns>
+		/// The component (as its interface type).
+		/// </returns>
+		/// <typeparam name='T'>
+		/// The interface type of the component. Must be an IMonoBehaviour.
+		/// </typeparam>
+		public static T GetComponentFromInterface<T>(this Component component) where T : class, IMonoBehaviour
+		{
+			var components = component.GetComponents<MonoBehaviour>();
+			foreach(var c in components)
+			{
+				if (typeof(T).IsAssignableFrom(c.GetType()))
+				{
+					return c as T;
+				}
+			}
+			
+			return null;
 		}
 	}
 }

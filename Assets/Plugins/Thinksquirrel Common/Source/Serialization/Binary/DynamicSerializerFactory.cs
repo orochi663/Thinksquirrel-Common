@@ -27,7 +27,7 @@
 //
 // This file is available at https://github.com/Thinksquirrel-Software/Thinksquirrel-Common
 //
-#if !COMPACT
+#if false
 using System;
 using System.Collections;
 using System.Reflection;

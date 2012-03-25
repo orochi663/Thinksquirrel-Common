@@ -28,6 +28,7 @@
 //
 #if !COMPACT
 using UnityEngine;
+using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -44,21 +45,27 @@ namespace ThinksquirrelSoftware.Common.Threading
 	public class ThreadUtility : MonoBase
 	{
 	    private static ThreadUtility instance = null;
+	
+	    public static void EnsureHelper()
+	    {
+	        if (null == (object)instance)
+	        {
+	            instance = FindObjectOfType(typeof(ThreadUtility)) as ThreadUtility;
+	            if (null == (object)instance)
+	            {
+	                var go = new GameObject("[ThreadUtility]");
+	                go.hideFlags = HideFlags.NotEditable | HideFlags.HideInHierarchy | HideFlags.HideInInspector;
+	                instance = go.AddComponent<ThreadUtility>();
+	                instance.EnsureHelperInstance();
+	            }
+	        }
+	    }
+	
 	    private static ThreadUtility Instance
 	    {
 	        get
 	        {
-	            if (null == (object)instance)
-	            {
-	                instance = FindObjectOfType(typeof(ThreadUtility)) as ThreadUtility;
-	                if (null == (object)instance)
-	                {
-	                    var go = new GameObject("Unity Thread Helper");
-	                   	DontDestroyOnLoad(go);
-	                    instance = go.AddComponent<ThreadUtility>();
-	                    instance.EnsureHelper();
-	                }
-	            }
+	            EnsureHelper();
 	            return instance;
 	        }
 	    }
@@ -84,7 +91,7 @@ namespace ThinksquirrelSoftware.Common.Threading
 	            return Instance.CurrentTaskDistributor;
 	        }
 	    }
-/*! \cond PRIVATE */
+	
 	    private Dispatcher dispatcher;
 	    public Dispatcher CurrentDispatcher
 	    {
@@ -102,15 +109,14 @@ namespace ThinksquirrelSoftware.Common.Threading
 	            return taskDistributor;
 	        }
 	    }
-/*! \endcond */
-		
-	    private void EnsureHelper()
+	
+	    private void EnsureHelperInstance()
 	    {
 	        if (dispatcher == null)
-	            dispatcher = new Threading.Dispatcher();
+	            dispatcher = new Dispatcher();
 	
 	        if (taskDistributor == null)
-	            taskDistributor = new Threading.TaskDistributor();
+	            taskDistributor = new TaskDistributor();
 	    }
 	
 	    /// <summary>
@@ -121,7 +127,7 @@ namespace ThinksquirrelSoftware.Common.Threading
 	    /// <returns>The instance of the created thread class.</returns>
 	    public static ActionThread CreateThread(System.Action<ActionThread> action, bool autoStartThread)
 	    {
-	        Instance.EnsureHelper();
+	        Instance.EnsureHelperInstance();
 	
 	        System.Action<ActionThread> actionWrapper = currentThread =>
 	            {
@@ -170,9 +176,66 @@ namespace ThinksquirrelSoftware.Common.Threading
 	        return CreateThread((thread) => action(), true);
 	    }
 	
-	    List<ThreadBase> registeredThreads = new List<ThreadBase>();
-	    void RegisterThread(ThreadBase thread)
+	    #region Enumeratable
+	
+	    /// <summary>
+	    /// Creates new thread which runs the given action. The given action will be wrapped so that any exception will be catched and logged.
+	    /// </summary>
+	    /// <param name="action">The enumeratable action which the new thread should run.</param>
+	    /// <param name="autoStartThread">True when the thread should start immediately after creation.</param>
+	    /// <returns>The instance of the created thread class.</returns>
+	    public static ThreadBase CreateThread(System.Func<ThreadBase, IEnumerator> action, bool autoStartThread)
 	    {
+	        Instance.EnsureHelperInstance();
+	
+	        var thread = new EnumeratableActionThread(action, autoStartThread);
+	        Instance.RegisterThread(thread);
+	        return thread;
+	    }
+	
+	    /// <summary>
+	    /// Creates new thread which runs the given action and starts it after creation. The given action will be wrapped so that any exception will be catched and logged.
+	    /// </summary>
+	    /// <param name="action">The enumeratable action which the new thread should run.</param>
+	    /// <returns>The instance of the created thread class.</returns>
+	    public static ThreadBase CreateThread(System.Func<ThreadBase, IEnumerator> action)
+	    {
+	        return CreateThread(action, true);
+	    }
+	
+	    /// <summary>
+	    /// Creates new thread which runs the given action. The given action will be wrapped so that any exception will be catched and logged.
+	    /// </summary>
+	    /// <param name="action">The enumeratable action which the new thread should run.</param>
+	    /// <param name="autoStartThread">True when the thread should start immediately after creation.</param>
+	    /// <returns>The instance of the created thread class.</returns>
+	    public static ThreadBase CreateThread(System.Func<IEnumerator> action, bool autoStartThread)
+	    {
+	        System.Func<ThreadBase, IEnumerator> wrappedAction = (thread) => { return action(); };
+	        return CreateThread(wrappedAction, autoStartThread);
+	    }
+	
+	    /// <summary>
+	    /// Creates new thread which runs the given action and starts it after creation. The given action will be wrapped so that any exception will be catched and logged.
+	    /// </summary>
+	    /// <param name="action">The action which the new thread should run.</param>
+	    /// <returns>The instance of the created thread class.</returns>
+	    public static ThreadBase CreateThread(System.Func<IEnumerator> action)
+	    {
+	        System.Func<ThreadBase, IEnumerator> wrappedAction = (thread) => { return action(); };
+	        return CreateThread(wrappedAction, true);
+	    }
+	
+	    #endregion
+	
+	    List<ThreadBase> registeredThreads = new List<ThreadBase>();
+	    public void RegisterThread(ThreadBase thread)
+	    {
+	        if (registeredThreads.Contains(thread))
+	        {
+	            return;
+	        }
+	
 	        registeredThreads.Add(thread);
 	    }
 	
@@ -190,7 +253,7 @@ namespace ThinksquirrelSoftware.Common.Threading
 	        taskDistributor = null;
 	    }
 	
-		void Update()
+	    void Update()
 	    {
 	        if (dispatcher != null)
 	            dispatcher.ProcessTasks();

@@ -29,24 +29,32 @@
 #if !COMPACT
 using System.Collections.Generic;
 using System;
+using System.Collections;
 using System.Threading;
 
 namespace ThinksquirrelSoftware.Common.Threading
 {
-	/// <summary>
-	/// Bass class for a task.
-	/// </summary>
-	/*! \author Original Unity Thread Helper classes (c) 2011 Marrrk (http://forum.unity3d.com/threads/90128-Unity-Threading-Helper)*/
+	public enum TaskSortingSystem
+    {
+        NeverReorder,
+        ReorderWhenAdded,
+        ReorderWhenExecuted
+    }
+
     public abstract class TaskBase
     {
+        /// <summary>
+        /// Change this when you work with a prioritzable Dispatcher or TaskDistributor to change the execution order
+        /// A low value will be executed first.
+        /// </summary>
+        public volatile int Priority;
+
         private ManualResetEvent abortEvent = new ManualResetEvent(false);
         private ManualResetEvent endedEvent = new ManualResetEvent(false);
 		private bool hasStarted = false;
 
-		/*! \cond PRIVATE */	
-		protected abstract void Do();
-		/*! \endcond */	
-		
+		protected abstract IEnumerator Do();
+
 		/// <summary>
 		/// Returns true if the task should abort. If a Task should abort and has not yet been started
 		/// it will never start but indicate an end and failed state.
@@ -55,7 +63,7 @@ namespace ThinksquirrelSoftware.Common.Threading
         {
             get
 			{
-				return abortEvent.WaitOne(0); 
+				return abortEvent.WaitOne(0, false); 
 			}
         }
 
@@ -66,7 +74,7 @@ namespace ThinksquirrelSoftware.Common.Threading
         {
             get 
 			{
-				return endedEvent.WaitOne(0); 
+				return endedEvent.WaitOne(0, false); 
 			}
         }
 
@@ -79,7 +87,7 @@ namespace ThinksquirrelSoftware.Common.Threading
         {
             get
             {
-				return endedEvent.WaitOne(0) && !abortEvent.WaitOne(0);
+				return endedEvent.WaitOne(0, false) && !abortEvent.WaitOne(0, false);
             }
         }
 
@@ -91,12 +99,12 @@ namespace ThinksquirrelSoftware.Common.Threading
         {
             get
             {
-				return endedEvent.WaitOne(0) && abortEvent.WaitOne(0);
+				return endedEvent.WaitOne(0, false) && abortEvent.WaitOne(0, false);
             }
         }
 
 		/// <summary>
-		/// Notifies the task to abort and sets the task state to failed. The task needs to check ShouldAbort if the task should  abort.
+		/// Notifies the task to abort and sets the task state to failed. The task needs to check ShouldAbort if the task should abort.
 		/// </summary>
         public void Abort()
         {
@@ -146,7 +154,10 @@ namespace ThinksquirrelSoftware.Common.Threading
 		/// Use this method only for Tasks with return values (functions)!
 		/// </summary>
 		/// <returns>The return value of the task as the given type.</returns>
-		public abstract TResult Wait<TResult>();
+		public virtual TResult Wait<TResult>()
+        {
+            throw new InvalidOperationException("This task type does not support return values.");
+        }
 
 		/// <summary>
 		/// Blocks the calling thread until the task has been ended and returns the return value of the task as the given type.
@@ -154,7 +165,10 @@ namespace ThinksquirrelSoftware.Common.Threading
 		/// </summary>
 		/// <param name="seconds">Time in seconds this method will max wait.</param>
 		/// <returns>The return value of the task as the given type.</returns>
-		public abstract TResult WaitForSeconds<TResult>(float seconds);
+        public virtual TResult WaitForSeconds<TResult>(float seconds)
+        {
+            throw new InvalidOperationException("This task type does not support return values.");
+        }
 
 		/// <summary>
 		/// Blocks the calling thread until the task has been ended and returns the return value of the task as the given type.
@@ -163,13 +177,33 @@ namespace ThinksquirrelSoftware.Common.Threading
 		/// <param name="seconds">Time in seconds this method will max wait.</param>
 		/// <param name="defaultReturnValue">The default return value which will be returned when the task has failed.</param>
 		/// <returns>The return value of the task as the given type.</returns>
-		public abstract TResult WaitForSeconds<TResult>(float seconds, TResult defaultReturnValue);
+		public virtual TResult WaitForSeconds<TResult>(float seconds, TResult defaultReturnValue)
+        {
+            throw new InvalidOperationException("This task type does not support return values.");
+        }
 
         internal void DoInternal()
         {
 			hasStarted = true;
-			if (!ShouldAbort)
-				Do();
+            if (!ShouldAbort)
+            {
+                var enumerator = Do();
+                if (enumerator == null)
+                {
+                    return;
+                }
+
+                var currentThread = ThreadBase.CurrentThread;
+                do
+                {
+                    var task = (TaskBase)enumerator.Current;
+                    if (task != null && currentThread != null)
+                    {
+                        currentThread.DispatchAndWait(task);
+                    }
+                }
+                while (enumerator.MoveNext());
+            }
             endedEvent.Set();
         }
 
@@ -184,11 +218,7 @@ namespace ThinksquirrelSoftware.Common.Threading
 			abortEvent.Close();
         }
     }
-	
-	/// <summary>
-	/// A task to be performed by a dispatcher.
-	/// </summary>
-	/*! \author Original Unity Thread Helper classes (c) 2011 Marrrk (http://forum.unity3d.com/threads/90128-Unity-Threading-Helper)*/
+
     public class Task : TaskBase
     {
         private Action action;
@@ -197,34 +227,14 @@ namespace ThinksquirrelSoftware.Common.Threading
         {
             this.action = action;
         }
-		
-		/*! \cond PRIVATE */
-		protected override void Do()
+
+        protected override IEnumerator Do()
         {
             action();
+            return null;
         }
-		/*! \endcond */	
-		
-		public override TResult Wait<TResult>()
-		{
-			throw new InvalidOperationException("This task type does not support return values.");
-		}
-
-		public override TResult WaitForSeconds<TResult>(float seconds)
-		{
-			throw new InvalidOperationException("This task type does not support return values.");
-		}
-
-		public override TResult WaitForSeconds<TResult>(float seconds, TResult defaultReturnValue)
-		{
-			throw new InvalidOperationException("This task type does not support return values.");
-		}
     }
-	
-	/// <summary>
-	/// A task to be performed by a dispatcher.
-	/// </summary>
-	/*! \author Original Unity Thread Helper classes (c) 2011 Marrrk (http://forum.unity3d.com/threads/90128-Unity-Threading-Helper)*/
+
     public class Task<T> : TaskBase
     {
         private Func<T> function;
@@ -234,14 +244,13 @@ namespace ThinksquirrelSoftware.Common.Threading
         {
             this.function = function;
         }
-		
-		/*! \cond PRIVATE */
-		protected override void Do()
+
+		protected override IEnumerator Do()
         {
             result = function();
+            return null;
         }
-		/*! \endcond */	
-		
+
 		public override TResult Wait<TResult>()
 		{
 			return (TResult)(object)Result;
