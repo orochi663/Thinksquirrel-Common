@@ -48,6 +48,7 @@
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Collections\KdTree.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Collections\Node.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Common\MonoBase.cs" />
+     <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Editor\UnityEditorBinding.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Extensions\Enumerable.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Extensions\Misc.cs" />
      <Compile Include="Assets\Plugins\Thinksquirrel Common\Source\Extensions\Unity.cs" />

@@ -1,10 +1,10 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Plugins/Thinksquirrel Common/Source/Extensions/Enumerable.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Plugins/Thinksquirrel Common/Source/Editor/UnityEditorBinding.cs">
     <Files>
-      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Extensions/Enumerable.cs" Line="90" Column="52" />
-      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/ObjectModel/IMonoBehaviour.cs" Line="51" Column="24" />
-      <File FileName="Assets/Editor/Thinksquirrel Common/Source/Common/EditorObjExporter.cs" Line="1" Column="1" />
+      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Editor/UnityEditorBinding.cs" Line="73" Column="4" />
+      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Extensions/Unity.cs" Line="1" Column="1" />
+      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Common/MonoBase.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -21,14 +21,16 @@
             </Node>
           </Node>
           <Node name="Assembly-CSharp-firstpass" expanded="True">
+            <Node name="References" expanded="True" />
             <Node name="Assets" expanded="True">
               <Node name="Plugins" expanded="True">
                 <Node name="Thinksquirrel Common" expanded="True">
                   <Node name="Source" expanded="True">
                     <Node name="Common" expanded="True" />
-                    <Node name="Extensions" expanded="True">
-                      <Node name="Enumerable.cs" selected="True" />
+                    <Node name="Editor" expanded="True">
+                      <Node name="UnityEditorBinding.cs" selected="True" />
                     </Node>
+                    <Node name="Extensions" expanded="True" />
                     <Node name="ObjectModel" expanded="True" />
                     <Node name="Serialization" expanded="True">
                       <Node name="Binary" expanded="True" />
