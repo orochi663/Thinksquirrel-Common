@@ -34,15 +34,14 @@ using System.Threading;
 
 namespace ThinksquirrelSoftware.Common.Threading
 {
-	public abstract class DispatcherBase : IDisposable
+	/// <summary>
+	/// Base class for a dispatcher.
+	/// </summary>
+	/*! \author Original Unity Thread Helper classes (c) 2011 Marrrk (http://forum.unity3d.com/threads/90128-Unity-Threading-Helper)*/
+    public abstract class DispatcherBase : IDisposable
     {
-		protected List<TaskBase> taskList = new List<TaskBase>();
+		protected Queue<TaskBase> taskQueue = new Queue<TaskBase>();
         protected ManualResetEvent dataEvent = new ManualResetEvent(false);
-
-        /// <summary>
-        /// Set the task reordering system
-        /// </summary>
-        public TaskSortingSystem TaskSortingSystem;
 
 		public DispatcherBase()
 		{
@@ -55,8 +54,8 @@ namespace ThinksquirrelSoftware.Common.Threading
         {
             get
             {
-                lock (taskList)
-                    return taskList.Count;
+                lock (taskQueue)
+                    return taskQueue.Count;
             }
         }
 
@@ -89,49 +88,19 @@ namespace ThinksquirrelSoftware.Common.Threading
             return task;
         }
 
-        /// <summary>
-        /// Dispatches a given Task.
-        /// </summary>
-        /// <param name="action">The action to process at the dispatchers thread.</param>
-        /// <returns>The new task.</returns>
-        public TaskBase Dispatch(TaskBase task)
-        {
-            CheckAccessLimitation();
-
-            AddTask(task);
-            return task;
-        }
-
 		internal void AddTask(TaskBase task)
         {
-            lock (taskList)
-            {
-                taskList.Add(task);
-                
-                if (TaskSortingSystem == TaskSortingSystem.ReorderWhenAdded ||
-                    TaskSortingSystem == TaskSortingSystem.ReorderWhenExecuted)
-                    ReorderTasks();
-            }
+            lock (taskQueue)
+                taskQueue.Enqueue(task);
 			dataEvent.Set();
         }
 
         internal void AddTasks(IEnumerable<TaskBase> tasks)
         {
-            lock (taskList)
-            {
-                foreach (var task in tasks)
-                    taskList.Add(task);
-
-                if (TaskSortingSystem == TaskSortingSystem.ReorderWhenAdded ||
-                    TaskSortingSystem == TaskSortingSystem.ReorderWhenExecuted)
-                    ReorderTasks();
-            }
+            lock (taskQueue)
+				foreach (var task in tasks)
+					taskQueue.Enqueue(task);
 			dataEvent.Set();
-        }
-
-        protected void ReorderTasks()
-        {
-            taskList.Sort((a, b) => -a.Priority.CompareTo(b.Priority));
         }
 
 		internal IEnumerable<TaskBase> SplitTasks(int divisor)
@@ -147,15 +116,12 @@ namespace ThinksquirrelSoftware.Common.Threading
 			List<TaskBase> newTasks = new List<TaskBase>();
 
 			if (count == 0)
-				count = taskList.Count;
+				count = taskQueue.Count;
 
-            lock (taskList)
+            lock (taskQueue)
             {
-                newTasks.AddRange(taskList.Take(count));
-                taskList.RemoveRange(0, Math.Min(count, taskList.Count));
-
-                if (TaskSortingSystem == TaskSortingSystem.ReorderWhenExecuted)
-                    ReorderTasks();
+				for (int i = 0; i < count && taskQueue.Count != 0; ++i)
+					newTasks.Add(taskQueue.Dequeue());
             }
 
 			if (TaskCount == 0)
@@ -173,15 +139,12 @@ namespace ThinksquirrelSoftware.Common.Threading
 			while (true)
 			{
 				TaskBase currentTask;
-                lock (taskList)
+				lock (taskQueue)
 				{
-                    if (taskList.Count != 0)
-                    {
-                        currentTask = taskList[0];
-                        taskList.RemoveAt(0);
-                    }
-                    else
-                        break;
+					if (taskQueue.Count != 0)
+						currentTask = taskQueue.Dequeue();
+					else
+						break;
 				}
 				currentTask.Dispose();
 			}
@@ -192,7 +155,11 @@ namespace ThinksquirrelSoftware.Common.Threading
 
         #endregion
     }
-
+	
+	/// <summary>
+	/// Performs tasks on threads.
+	/// </summary>
+	/*! \author Original Unity Thread Helper classes (c) 2011 Marrrk (http://forum.unity3d.com/threads/90128-Unity-Threading-Helper)*/
     public class Dispatcher : DispatcherBase
     {
         [ThreadStatic]
@@ -220,7 +187,6 @@ namespace ThinksquirrelSoftware.Common.Threading
 		/// <summary>
 		/// Returns the Dispatcher instance of the current thread. When no instance has been created an exception will be thrown.
 		/// </summary>
-        /// 
         public static Dispatcher Current
         {
             get
@@ -348,12 +314,12 @@ namespace ThinksquirrelSoftware.Common.Threading
 		/// <returns>True when a task to process has been processed, false otherwise.</returns>
         public bool ProcessNextTask()
         {
-            lock (taskList)
+            lock (taskQueue)
             {
-                if (taskList.Count == 0)
+                if (taskQueue.Count == 0)
                     return false;
                 else
-                    ProcessSingleTask();
+                    ProcessTask();
             }
 
 			if (TaskCount == 0)
@@ -375,8 +341,8 @@ namespace ThinksquirrelSoftware.Common.Threading
             if (result == 0)
                 return false;
 
-            lock (taskList)
-                ProcessSingleTask();
+            lock (taskQueue)
+                ProcessTask();
 			if (TaskCount == 0)
 				dataEvent.Reset();
             return true;
@@ -384,27 +350,21 @@ namespace ThinksquirrelSoftware.Common.Threading
 
         private void ProcessTasksInternal()
         {
-            lock (taskList)
+            lock (taskQueue)
             {
-                while (taskList.Count != 0)
-                    ProcessSingleTask();
+                while (taskQueue.Count != 0)
+                    ProcessTask();
 			}
 
 			if (TaskCount == 0)
 				dataEvent.Reset();
 		}
 
-        private void ProcessSingleTask()
+        private void ProcessTask()
         {
-            if (taskList.Count == 0)
+            if (taskQueue.Count == 0)
                 return;
-
-            var task = taskList[0];
-            taskList.RemoveAt(0);
-            RunTask(task);
-
-            if (TaskSortingSystem == TaskSortingSystem.ReorderWhenExecuted)
-                ReorderTasks();
+			RunTask(taskQueue.Dequeue());
         }
 
 		internal void RunTask(TaskBase task)
@@ -430,15 +390,12 @@ namespace ThinksquirrelSoftware.Common.Threading
         {
 			while (true)
 			{
-				lock (taskList)
+				lock (taskQueue)
 				{
-                    if (taskList.Count != 0)
-                    {
-                        currentTask = taskList[0];
-                        taskList.RemoveAt(0);
-                    }
-                    else
-                        break;
+					if (taskQueue.Count != 0)
+						currentTask = taskQueue.Dequeue();
+					else
+						break;
 				}
 				currentTask.Dispose();
 			}

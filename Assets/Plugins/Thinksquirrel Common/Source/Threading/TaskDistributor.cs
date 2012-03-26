@@ -29,13 +29,16 @@
 #if !COMPACT
 using System.Collections.Generic;
 using System;
-using System.Collections;
 using System.Linq;
 using System.Threading;
 
 namespace ThinksquirrelSoftware.Common.Threading
 {
-	public class TaskDistributor : DispatcherBase
+	/// <summary>
+	/// Task distributor. Dispatches multiple background tasks.
+	/// </summary>
+	/*! \author Original Unity Thread Helper classes (c) 2011 Marrrk (http://forum.unity3d.com/threads/90128-Unity-Threading-Helper)*/
+    public class TaskDistributor : DispatcherBase
 	{
         private TaskWorker[] workerThreads;
 
@@ -84,14 +87,8 @@ namespace ThinksquirrelSoftware.Common.Threading
 		public TaskDistributor(int workerThreadCount, bool autoStart)
 			: base()
 		{
-            if (workerThreadCount <= 0)
-            {
-#if !NO_UNITY
-                workerThreadCount = UnityEngine.SystemInfo.processorCount * 3;
-#else
-                workerThreadCount = Environment.ProcessorCount * 3;
-#endif
-            }
+			if (workerThreadCount <= 0)
+				workerThreadCount = UnityEngine.SystemInfo.processorCount * 3;
 
 			workerThreads = new TaskWorker[workerThreadCount];
 			lock (workerThreads)
@@ -128,7 +125,7 @@ namespace ThinksquirrelSoftware.Common.Threading
         internal void FillTasks(Dispatcher target)
         {
 			target.AddTasks(this.IsolateTasks(1));
-        }
+		}
 
 		protected override void CheckAccessLimitation()
 		{
@@ -150,16 +147,13 @@ namespace ThinksquirrelSoftware.Common.Threading
 			while (true)
 			{
 				TaskBase currentTask;
-                lock (taskList)
-                {
-                    if (taskList.Count != 0)
-                    {
-                        currentTask = taskList[0];
-                        taskList.RemoveAt(0);
-                    }
-                    else
-                        break;
-                }
+				lock (taskQueue)
+				{
+					if (taskQueue.Count != 0)
+						currentTask = taskQueue.Dequeue();
+					else
+						break;
+				}
 				currentTask.Dispose();
 			}
 
@@ -179,7 +173,7 @@ namespace ThinksquirrelSoftware.Common.Threading
 
         #endregion
     }
-
+/*! \cond PRIVATE */
     internal class TaskWorker : ThreadBase
     {
 		public Dispatcher Dispatcher;
@@ -192,7 +186,7 @@ namespace ThinksquirrelSoftware.Common.Threading
 			this.Dispatcher = new Dispatcher(false);
 		}
 
-        protected override IEnumerator Do()
+        protected override void Do()
         {
             while (!exitEvent.WaitOne(0, false))
             {
@@ -203,14 +197,13 @@ namespace ThinksquirrelSoftware.Common.Threading
                     {
 						var result = WaitHandle.WaitAny(new WaitHandle[] { exitEvent, TaskDistributor.NewDataWaitHandle });
                         if (result == 0)
-                            return null;
+                            return;
 						TaskDistributor.FillTasks(Dispatcher);
                     }
                 }
             }
-            return null;
         }
-
+/*! \endcond */
         public override void Dispose()
         {
             base.Dispose();
