@@ -2,11 +2,17 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Plugins/Thinksquirrel Common/Source/Threading/Thread.cs">
     <Files>
+<<<<<<< HEAD
       <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Threading/_ThreadUtility.cs" Line="31" Column="26" />
       <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Threading/Dispatcher.cs" Line="100" Column="4" />
       <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Threading/Task.cs" Line="202" Column="1" />
       <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Threading/TaskDistributor.cs" Line="32" Column="26" />
       <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Threading/Thread.cs" Line="31" Column="26" />
+=======
+      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Editor/UnityEditorBinding.cs" Line="73" Column="4" />
+      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Extensions/Unity.cs" Line="1" Column="1" />
+      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Common/MonoBase.cs" Line="1" Column="1" />
+>>>>>>> parent of 09f5676... Updated threading libraries
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
