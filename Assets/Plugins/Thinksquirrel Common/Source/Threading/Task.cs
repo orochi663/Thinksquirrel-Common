@@ -55,7 +55,8 @@ namespace ThinksquirrelSoftware.Common.Threading
         {
             get
 			{
-				return abortEvent.WaitOne(0, false); 
+				bool wait = ThreadUtility.isWebPlayer ? ThreadUtility.WaitOne(abortEvent, 0) : abortEvent.WaitOne(0, false);
+				return wait;
 			}
         }
 
@@ -66,7 +67,8 @@ namespace ThinksquirrelSoftware.Common.Threading
         {
             get 
 			{
-				return endedEvent.WaitOne(0, false); 
+				bool wait = ThreadUtility.isWebPlayer ? ThreadUtility.WaitOne(endedEvent, 0) : endedEvent.WaitOne(0, false);
+				return wait;
 			}
         }
 
@@ -79,7 +81,7 @@ namespace ThinksquirrelSoftware.Common.Threading
         {
             get
             {
-				return endedEvent.WaitOne(0, false) && !abortEvent.WaitOne(0, false);
+				return HasEnded && !ShouldAbort;
             }
         }
 
@@ -91,7 +93,7 @@ namespace ThinksquirrelSoftware.Common.Threading
         {
             get
             {
-				return endedEvent.WaitOne(0, false) && abortEvent.WaitOne(0, false);
+				return HasEnded && ShouldAbort;
             }
         }
 
@@ -138,7 +140,10 @@ namespace ThinksquirrelSoftware.Common.Threading
 		/// <param name="seconds">Time in seconds this method will max wait.</param>
         public void WaitForSeconds(float seconds)
         {
-			endedEvent.WaitOne(TimeSpan.FromSeconds(seconds), false);
+			if (ThreadUtility.isWebPlayer)
+				ThreadUtility.WaitOne(endedEvent, TimeSpan.FromSeconds(seconds));
+			else
+				endedEvent.WaitOne(TimeSpan.FromSeconds(seconds), false);
         }
 
 		/// <summary>

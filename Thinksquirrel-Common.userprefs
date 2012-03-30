@@ -1,49 +1,22 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Plugins/Thinksquirrel Common/Source/Threading/Thread.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Plugins/Thinksquirrel Common/Source/Threading/_ThreadUtility.cs">
     <Files>
-<<<<<<< HEAD
-      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Threading/_ThreadUtility.cs" Line="31" Column="26" />
-      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Threading/Dispatcher.cs" Line="100" Column="4" />
-      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Threading/Task.cs" Line="202" Column="1" />
-      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Threading/TaskDistributor.cs" Line="32" Column="26" />
-      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Threading/Thread.cs" Line="31" Column="26" />
-=======
-      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Editor/UnityEditorBinding.cs" Line="73" Column="4" />
-      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Extensions/Unity.cs" Line="1" Column="1" />
-      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Common/MonoBase.cs" Line="1" Column="1" />
->>>>>>> parent of 09f5676... Updated threading libraries
+      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Threading/Dispatcher.cs" Line="290" Column="4" />
+      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Threading/_ThreadUtility.cs" Line="88" Column="72" />
+      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Threading/Task.cs" Line="148" Column="3" />
+      <File FileName="Assets/Plugins/Thinksquirrel Common/Source/Threading/TaskDistributor.cs" Line="199" Column="37" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
-          <Node name="Assembly-CSharp-Editor" expanded="True">
-            <Node name="Assets" expanded="True">
-              <Node name="Editor" expanded="True">
-                <Node name="Thinksquirrel Common" expanded="True">
-                  <Node name="Source" expanded="True">
-                    <Node name="Common" expanded="True" />
-                  </Node>
-                </Node>
-              </Node>
-            </Node>
-          </Node>
           <Node name="Assembly-CSharp-firstpass" expanded="True">
-            <Node name="References" expanded="True" />
             <Node name="Assets" expanded="True">
               <Node name="Plugins" expanded="True">
                 <Node name="Thinksquirrel Common" expanded="True">
                   <Node name="Source" expanded="True">
-                    <Node name="Common" expanded="True" />
-                    <Node name="Editor" expanded="True" />
-                    <Node name="Extensions" expanded="True" />
-                    <Node name="ObjectModel" expanded="True" />
-                    <Node name="Serialization" expanded="True">
-                      <Node name="Binary" expanded="True" />
-                    </Node>
-                    <Node name="Text" expanded="True" />
                     <Node name="Threading" expanded="True">
-                      <Node name="Thread.cs" selected="True" />
+                      <Node name="_ThreadUtility.cs" selected="True" />
                     </Node>
                   </Node>
                 </Node>

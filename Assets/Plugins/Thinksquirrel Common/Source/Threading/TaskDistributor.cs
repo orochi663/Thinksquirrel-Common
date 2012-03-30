@@ -185,10 +185,18 @@ namespace ThinksquirrelSoftware.Common.Threading
 			this.TaskDistributor = taskDistributor;
 			this.Dispatcher = new Dispatcher(false);
 		}
-
-        protected override void Do()
+		
+		private bool CheckExitEvent()
+		{
+			if (ThreadUtility.isWebPlayer)
+				return ThreadUtility.WaitOne(exitEvent, 0);
+			else
+				return exitEvent.WaitOne(0, false);
+		}
+        
+		protected override void Do()
         {
-            while (!exitEvent.WaitOne(0, false))
+            while (!CheckExitEvent())
             {
                 if (!Dispatcher.ProcessNextTask())
                 {
