@@ -287,7 +287,8 @@ namespace ThinksquirrelSoftware.Common.Threading
 		/// </summary>
         public void ProcessTasks()
         {
-			if (dataEvent.WaitOne(0, false))
+			bool wait = ThreadUtility.isWebPlayer ? ThreadUtility.WaitOne(dataEvent, 0) : dataEvent.WaitOne(0, false);
+			if (wait)
 				ProcessTasksInternal();
         }
 

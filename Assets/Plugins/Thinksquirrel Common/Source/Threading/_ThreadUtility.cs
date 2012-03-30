@@ -44,6 +44,10 @@ namespace ThinksquirrelSoftware.Common.Threading
 	public class ThreadUtility : MonoBase
 	{
 	    private static ThreadUtility instance = null;
+		private static bool mIsWebPlayer = false;
+		private static System.Reflection.MethodInfo mMethod;
+		private static System.Reflection.MethodInfo mMethod2;
+		
 	    private static ThreadUtility Instance
 	    {
 	        get
@@ -53,6 +57,7 @@ namespace ThinksquirrelSoftware.Common.Threading
 	                instance = FindObjectOfType(typeof(ThreadUtility)) as ThreadUtility;
 	                if (null == (object)instance)
 	                {
+						mIsWebPlayer = Application.isWebPlayer;
 	                    var go = new GameObject("Unity Thread Helper");
 	                   	DontDestroyOnLoad(go);
 	                    instance = go.AddComponent<ThreadUtility>();
@@ -63,6 +68,42 @@ namespace ThinksquirrelSoftware.Common.Threading
 	        }
 	    }
 	
+		public static bool isWebPlayer
+		{
+			get
+			{
+				return mIsWebPlayer;
+			}
+		}
+		
+		public static bool WaitOne(System.Threading.ManualResetEvent evt, int ms)
+		{
+			if (mMethod != null)
+			{
+				return (bool)mMethod.Invoke(evt, new object[1] { ms });
+			}
+			else
+			{
+				var type = evt.GetType();
+				mMethod = type.GetMethod("WaitOne", new System.Type[1] { typeof(int) } );
+				return (bool)mMethod.Invoke(evt, new object[1] { ms });
+			}
+		}
+		
+		public static bool WaitOne(System.Threading.ManualResetEvent evt, System.TimeSpan timeSpan)
+		{
+			if (mMethod2 != null)
+			{
+				return (bool)mMethod2.Invoke(evt, new object[1] { timeSpan });
+			}
+			else
+			{
+				var type = evt.GetType();
+				mMethod2 = type.GetMethod("WaitOne", new System.Type[1] { typeof(System.TimeSpan) } );
+				return (bool)mMethod2.Invoke(evt, new object[1] { timeSpan });
+			}
+		}
+		
 	    /// <summary>
 	    /// Returns the GUI/Main Dispatcher.
 	    /// </summary>
