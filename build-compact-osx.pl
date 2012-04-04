@@ -22,7 +22,7 @@ GetOptions (
 	"release" => \$optionRelease
 );
 
-my $debugOptions = $optionRelease == 0 ? "-d:DEBUG" : "";
+my $debugOptions = $optionRelease == 0 ? "-d:DEBUG,COMPACT" : "-d:COMPACT";
 
 sub BuildAssembly
 {
@@ -40,5 +40,5 @@ sub BuildAssembly
 	print color ("reset");
 }
 
-BuildAssembly ("library", "'bin/common/Assets/Plugins/Thinksquirrel Common/ThinksquirrelCommon.Runtime.dll'", $sourceThinksquirrelCommon, "-v -recurse:$sourceThinksquirrelCommon -d:RUNTIME $debugOptions -r:$assemblyUnityEngine");
-BuildAssembly ("library", "'bin/common/Assets/Editor/Thinksquirrel Common/ThinksquirrelCommon.Editor.dll'", $sourceThinksquirrelEditor, "-v -recurse:$sourceThinksquirrelEditor -d:RUNTIME $debugOptions -r:'bin/common/Assets/Plugins/Thinksquirrel Common/ThinksquirrelCommon.Runtime.dll',$assemblyUnityEngine,$assemblyUnityEditor");
+BuildAssembly ("library", "'bin/compact/Assets/Plugins/Thinksquirrel Common/ThinksquirrelCommon.Runtime.dll'", $sourceThinksquirrelCommon, "-v -recurse:$sourceThinksquirrelCommon -d:RUNTIME $debugOptions -r:$assemblyUnityEngine");
+BuildAssembly ("library", "'bin/compact/Assets/Editor/Thinksquirrel Common/ThinksquirrelCommon.Editor.dll'", $sourceThinksquirrelEditor, "-v -recurse:$sourceThinksquirrelEditor -d:RUNTIME $debugOptions -r:'bin/compact/Assets/Plugins/Thinksquirrel Common/ThinksquirrelCommon.Runtime.dll',$assemblyUnityEngine,$assemblyUnityEditor");
