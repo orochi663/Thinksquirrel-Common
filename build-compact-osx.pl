@@ -40,5 +40,5 @@ sub BuildAssembly
 	print color ("reset");
 }
 
-BuildAssembly ("library", "'bin/compact/Assets/Plugins/Thinksquirrel Common/ThinksquirrelCommon.Runtime.dll'", $sourceThinksquirrelCommon, "-v -recurse:$sourceThinksquirrelCommon -d:RUNTIME $debugOptions -r:$assemblyUnityEngine");
-BuildAssembly ("library", "'bin/compact/Assets/Editor/Thinksquirrel Common/ThinksquirrelCommon.Editor.dll'", $sourceThinksquirrelEditor, "-v -recurse:$sourceThinksquirrelEditor -d:RUNTIME $debugOptions -r:'bin/compact/Assets/Plugins/Thinksquirrel Common/ThinksquirrelCommon.Runtime.dll',$assemblyUnityEngine,$assemblyUnityEditor");
+BuildAssembly ("library", "'bin/compact/Plugins/Thinksquirrel Common/ThinksquirrelCommon.Runtime.dll'", $sourceThinksquirrelCommon, "-v -recurse:$sourceThinksquirrelCommon -d:RUNTIME $debugOptions -r:$assemblyUnityEngine");
+BuildAssembly ("library", "'bin/compact/Editor/Thinksquirrel Common/ThinksquirrelCommon.Editor.dll'", $sourceThinksquirrelEditor, "-v -recurse:$sourceThinksquirrelEditor -d:RUNTIME $debugOptions -r:'bin/compact/Plugins/Thinksquirrel Common/ThinksquirrelCommon.Runtime.dll',$assemblyUnityEngine,$assemblyUnityEditor");
