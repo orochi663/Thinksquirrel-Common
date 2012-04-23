@@ -221,6 +221,11 @@ namespace ThinksquirrelSoftware.Common.Collections
             return Delete(ref root, key);
         }
 
+		public bool ContainsKey(TKey key)
+		{
+			return Search(root, key) != null;
+		}
+		
         public TValue this[TKey key]
         {
             get
