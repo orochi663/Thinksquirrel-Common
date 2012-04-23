@@ -1,4 +1,8 @@
-
 Library/
 Temp/
 bin/
+*.pidb
+*.sln
+*.userprefs
+*.csproj
+*.unityproj
