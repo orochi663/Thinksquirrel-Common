@@ -56,7 +56,7 @@ namespace ThinksquirrelSoftware.Common.Collections
 		//	Change this value to 2 if you only need two-dimensional X,Y points. The search will
 		//	be quicker in two dimensions.
 		private int numDims = 3;
-			
+		
 		public KdTree(int dimensions) {
 			lr = new KdTree[2];
 			numDims = dimensions;
@@ -68,9 +68,16 @@ namespace ThinksquirrelSoftware.Common.Collections
 		/// </summary>
 		public static KdTree MakeFromPoints(int dimensions, params Vector3[] points) {
 			int[] indices = Iota(points.Length);
-			return MakeFromPointsInner(0, 0, points.Length - 1, points, indices, dimensions);
+			return MakeFromPointsInner(0, 0, points.Length - 1, points, indices, dimensions, null);
 		}
 		
+		/// <summary>
+		/// Make a new tree from a list of points, reusing any old KDTree objects.
+		/// </summary>
+		public static KdTree Regenerate(KdTree tree, int dimensions, params Vector3[] points) {
+			int[] indices = Iota(points.Length);
+			return MakeFromPointsInner(0, 0, points.Length - 1, points, indices, dimensions, tree);
+		}
 	
 		//	Recursively build a tree by separating points at plane boundaries.
 		static KdTree MakeFromPointsInner(
@@ -78,10 +85,11 @@ namespace ThinksquirrelSoftware.Common.Collections
 						int stIndex, int enIndex,
 						Vector3[] points,
 						int[] inds,
-						int dimensions
-						) {
+						int dimensions,
+						KdTree tree) {
+
+			KdTree root = tree != null ? tree : new KdTree(dimensions);
 			
-			KdTree root = new KdTree(dimensions);
 			root.axis = depth % root.numDims;
 			int splitPoint = FindPivotIndex(points, inds, stIndex, enIndex, root.axis);
 	
@@ -91,13 +99,21 @@ namespace ThinksquirrelSoftware.Common.Collections
 			int leftEndIndex = splitPoint - 1;
 			
 			if (leftEndIndex >= stIndex) {
-				root.lr[0] = MakeFromPointsInner(depth + 1, stIndex, leftEndIndex, points, inds, dimensions);
+				root.lr[0] = MakeFromPointsInner(depth + 1, stIndex, leftEndIndex, points, inds, dimensions, root.lr[0]);
+			}
+			else
+			{
+				root.lr[0] = null;
 			}
 			
 			int rightStartIndex = splitPoint + 1;
 			
 			if (rightStartIndex <= enIndex) {
-				root.lr[1] = MakeFromPointsInner(depth + 1, rightStartIndex, enIndex, points, inds, dimensions);
+				root.lr[1] = MakeFromPointsInner(depth + 1, rightStartIndex, enIndex, points, inds, dimensions, root.lr[1]);
+			}
+			else
+			{
+				root.lr[1] = null;
 			}
 			
 			return root;
