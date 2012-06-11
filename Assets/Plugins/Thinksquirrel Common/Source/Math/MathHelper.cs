@@ -1,5 +1,5 @@
-// Enumerable extension methods
-// Enumerable.cs
+// Math helper methods
+// MathHelper.cs
 // Thinksquirrel Software Common Libraries
 //  
 // Author:
