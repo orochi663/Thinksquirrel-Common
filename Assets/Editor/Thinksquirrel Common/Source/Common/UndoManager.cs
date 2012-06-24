@@ -7,7 +7,7 @@
 //       Josh Montoute <josh@thinksquirrel.com>
 // 
 // Original code (c) 2011 Daniele Giardini
-// Availible at the Unify Community Wiki: http://www.unifycommunity.com/wiki/index.php?title=EditorUndoManager
+// Available at the Unify Community Wiki: http://www.unifycommunity.com/wiki/index.php?title=EditorUndoManager
 //
 // Redistribution and use in source and binary forms, with or without modification, 
 // are permitted provided that the following conditions are met:
