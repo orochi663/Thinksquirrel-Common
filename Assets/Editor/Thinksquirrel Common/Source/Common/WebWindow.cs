@@ -38,15 +38,12 @@ public class WebWindow : EditorWindow {
 	static StringComparison ignoreCase = StringComparison.CurrentCultureIgnoreCase;
 	
 	object webView;
-	dynamic x;
 	Type webViewType;
 	MethodInfo doGUIMethod;
 	MethodInfo loadURLMethod;
 	MethodInfo focusMethod;
 	MethodInfo unFocusMethod;
 	
-	Vector2 resizeStartPos;
-	Rect resizeStartWindowSize;
 	MethodInfo dockedGetterMethod;
 	
 	string urlText = "http://thinksquirrel.com";
@@ -103,7 +100,7 @@ public class WebWindow : EditorWindow {
 		}
 		
 		bool isDocked = (bool)(dockedGetterMethod.Invoke(this, null));
-		Rect webViewRect = new Rect(0,20,position.width,position.height - ((isDocked) ? 20 : 40));
+		Rect webViewRect = new Rect(0,0,position.width,position.height - ((isDocked) ? 20 : 40));
 		
 		//Hidden, disabled, button for taking focus away from urlfield
 		GUI.enabled = false;
