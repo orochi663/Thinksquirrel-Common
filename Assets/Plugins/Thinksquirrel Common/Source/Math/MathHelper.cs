@@ -26,6 +26,8 @@
 //
 // This file is available at https://github.com/Thinksquirrel-Software/Thinksquirrel-Common
 //
+using UnityEngine;
+
 namespace ThinksquirrelSoftware.Common.Math
 {
 	public static class MathHelper
@@ -41,6 +43,46 @@ namespace ThinksquirrelSoftware.Common.Math
 			}
 			
 			return System.Math.Abs(min) > System.Math.Abs(max) ? min : max;
+		}
+		
+		public static float RoundToIncrement(float value, float increment)
+		{
+			return Mathf.Round(value / increment) * increment;
+		}
+		
+		public static Vector2 SnapVector(Vector2 vector, Vector2 snapSize)
+		{
+			return new Vector2(RoundToIncrement(vector.x, snapSize.x), RoundToIncrement(vector.y, snapSize.y));
+		}
+		
+		public static Vector3 SnapVector(Vector3 vector, Vector3 snapSize)
+		{
+			return new Vector3(RoundToIncrement(vector.x, snapSize.x), RoundToIncrement(vector.y, snapSize.y), RoundToIncrement(vector.z, snapSize.z));
+		}
+		
+		public static Vector3 SnapVector(Vector3 vector, Vector2 snapSize)
+		{
+			return new Vector3(RoundToIncrement(vector.x, snapSize.x), RoundToIncrement(vector.y, snapSize.y), vector.z);
+		}
+		
+		public static Vector4 SnapVector(Vector4 vector, Vector4 snapSize)
+		{
+			return new Vector4(RoundToIncrement(vector.x, snapSize.x), RoundToIncrement(vector.y, snapSize.y), RoundToIncrement(vector.z, snapSize.z), RoundToIncrement(vector.w, snapSize.w));
+		}
+		
+		public static Vector4 SnapVector(Vector4 vector, Vector3 snapSize)
+		{
+			return new Vector4(RoundToIncrement(vector.x, snapSize.x), RoundToIncrement(vector.y, snapSize.y), RoundToIncrement(vector.z, snapSize.z), vector.w);
+		}
+		
+		public static Vector4 SnapVector(Vector4 vector, Vector2 snapSize)
+		{
+			return new Vector4(RoundToIncrement(vector.x, snapSize.x), RoundToIncrement(vector.y, snapSize.y), vector.z, vector.w);
+		}
+	
+		public static int Wrap(int value, int max)
+		{
+			return (value + max) % max;
 		}
 	}
 }
