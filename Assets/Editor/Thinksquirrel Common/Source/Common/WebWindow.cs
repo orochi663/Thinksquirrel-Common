@@ -100,7 +100,7 @@ public class WebWindow : EditorWindow {
 		}
 		
 		bool isDocked = (bool)(dockedGetterMethod.Invoke(this, null));
-		Rect webViewRect = new Rect(0,0,position.width,position.height - ((isDocked) ? 20 : 40));
+		Rect webViewRect = new Rect(0,0,position.width,position.height - ((isDocked) ? 0 : 20));
 		
 		//Hidden, disabled, button for taking focus away from urlfield
 		GUI.enabled = false;
