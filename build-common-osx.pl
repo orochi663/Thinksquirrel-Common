@@ -22,7 +22,7 @@ GetOptions (
 	"release" => \$optionRelease
 );
 
-my $debugOptions = $optionRelease == 0 ? "-d:DEBUG" : "";
+my $debugOptions = $optionRelease == 0 ? "-d:DEBUG -optimize" : "-optimize";
 
 sub BuildAssembly
 {
