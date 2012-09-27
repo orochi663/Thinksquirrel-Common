@@ -111,11 +111,6 @@ namespace ThinksquirrelSoftware.Common.ObjectModel
 			get;
 		}
 		
-		NetworkView networkView
-		{
-			get;
-		}
-		
 		GUITexture guiTexture
 		{
 			get;
