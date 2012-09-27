@@ -52,22 +52,27 @@ namespace ThinksquirrelSoftware.Common.Threading
 	    {
 	        get
 	        {
-	            if (null == (object)instance)
-	            {
-	                instance = FindObjectOfType(typeof(ThreadUtility)) as ThreadUtility;
-	                if (null == (object)instance)
-	                {
-						mIsWebPlayer = Application.isWebPlayer;
-	                    var go = new GameObject("Unity Thread Helper");
-	                   	DontDestroyOnLoad(go);
-	                    instance = go.AddComponent<ThreadUtility>();
-	                    instance.EnsureHelper();
-	                }
-	            }
+	            EnsureInstance();
 	            return instance;
 	        }
 	    }
 	
+		public static void EnsureInstance()
+		{
+			if (null == (object)instance)
+            {
+                instance = FindObjectOfType(typeof(ThreadUtility)) as ThreadUtility;
+                if (null == (object)instance)
+                {
+					mIsWebPlayer = Application.isWebPlayer;
+                    var go = new GameObject("Thread Utility");
+					go.hideFlags = HideFlags.HideInHierarchy;
+                   	DontDestroyOnLoad(go);
+                    instance = go.AddComponent<ThreadUtility>();
+                    instance.EnsureHelper();
+                }
+            }
+		}
 		public static bool isWebPlayer
 		{
 			get
