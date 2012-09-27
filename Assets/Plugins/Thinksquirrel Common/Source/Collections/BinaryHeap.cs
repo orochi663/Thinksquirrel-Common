@@ -36,19 +36,57 @@ namespace ThinksquirrelSoftware.Common.Collections
 	/// <summary>
 	/// Binary Heap class.
 	// </summary>
-	public class BinaryHeap<T> : IEnumerable<T>
+	public class BinaryHeap<TKey, TValue> : IEnumerable<TValue> where TKey : IComparable<TKey>
 	{
-		private List<IComparable> mKeys = new List<IComparable>(100);
-	    private List<T> mItems = new List<T>(100);
-		private HashSet<T> mHash;
-	    public BinaryHeap()
+		private List<TKey> mKeys;
+	    private List<TValue> mItems;
+		private HashSet<TValue> mHash;
+		private bool mUseHashSet;
+		
+		public int Capacity
 		{
-			mHash = new HashSet<T>();
+			get
+			{
+				return mKeys.Capacity;
+			}
+			set
+			{
+				if (mKeys.Capacity != value)
+				{
+					mKeys.Capacity = value;
+					mItems.Capacity = value;
+				}
+			}
 		}
 		
-		public BinaryHeap(IEqualityComparer<T> comparer)
+		public BinaryHeap(int capacity)
 		{
-			mHash = new HashSet<T>(comparer);
+			mKeys = new List<TKey>(capacity);
+			mItems = new List<TValue>(capacity);
+		}
+		
+		public BinaryHeap(bool useHashSet) : this(1, useHashSet)
+		{
+		}
+		
+		public BinaryHeap(IEqualityComparer<TValue> comparer) : this(1, comparer)
+		{
+		}
+		
+		public BinaryHeap(int capacity, bool useHashSet) : this(capacity)
+		{
+			mUseHashSet = useHashSet;
+			
+			if (mUseHashSet)
+			{
+				mHash = new HashSet<TValue>();
+			}
+		}
+		
+		public BinaryHeap(int capacity, IEqualityComparer<TValue> comparer) : this(capacity)
+		{
+			mUseHashSet = true;
+			mHash = new HashSet<TValue>(comparer);
 		}
 	
 	    /// <summary>
@@ -66,7 +104,7 @@ namespace ThinksquirrelSoftware.Common.Collections
 	    {
 			mKeys.Clear();
 	        mItems.Clear();
-			mHash.Clear();
+			if (mUseHashSet) mHash.Clear();
 	    }
 	
 	    /// <summary>
@@ -80,19 +118,22 @@ namespace ThinksquirrelSoftware.Common.Collections
 	    {
 			mKeys.TrimExcess();
 	        mItems.TrimExcess();
-			mHash.TrimExcess();
+			if (mUseHashSet) mHash.TrimExcess();
 	    }
 	
 	    /// <summary>
 	    /// Inserts an item onto the heap.
 	    /// </summary>
 	    /// <param name="newItem">The item to be inserted.</param>
-	    public void Insert(IComparable key, T newItem)
+	    public void Insert(TKey key, TValue newItem)
 	    {
+			if (Count == Capacity)
+				throw new InvalidOperationException("BinaryHeap: Capacity is full");
+			
 	        int i = Count;
 			mKeys.Add(key);
 	        mItems.Add(newItem);
-			mHash.Add(newItem);
+			if (mUseHashSet) mHash.Add(newItem);
 	        while (i > 0 && mKeys[((i - 1) / 2)].CompareTo(key) > 0)
 	        {
 				mKeys[i] = mKeys[mKeys.Count - 1 - ((i - 1) / 2)];
@@ -107,7 +148,7 @@ namespace ThinksquirrelSoftware.Common.Collections
 	    /// Return the root item from the collection, without removing it.
 	    /// </summary>
 	    /// <returns>Returns the item at the root of the heap.</returns>
-	    public T Peek()
+	    public TValue Peek()
 	    {
 	        if (mItems.Count == 0)
 	        {
@@ -115,26 +156,35 @@ namespace ThinksquirrelSoftware.Common.Collections
 	        }
 	        return mItems[0];
 	    }
+		
+		public TKey MaxPriority()
+		{
+			if (mKeys.Count == 0)
+	        {
+	            throw new InvalidOperationException("The heap is empty.");
+	        }
+	        return mKeys[0];
+		}
 
 	    /// <summary>
 	    /// Removes and returns the root item from the collection.
 	    /// </summary>
 	    /// <returns>Returns the item at the root of the heap.</returns>
-	    public T RemoveRoot()
+	    public TValue RemoveRoot()
 	    {
 	        if (mItems.Count == 0)
 	        {
 	            throw new InvalidOperationException("The heap is empty.");
 	        }
 	        // Get the first item
-	        T rslt = mItems[0];
+	        TValue rslt = mItems[0];
 	        // Get the last item and bubble it down.
-			IComparable tmpKey = mKeys[mItems.Count - 1];
-	        T tmp = mItems[mItems.Count - 1];
+			TKey tmpKey = mKeys[mItems.Count - 1];
+	        TValue tmp = mItems[mItems.Count - 1];
 	
 			mKeys.RemoveAt(mItems.Count - 1);
 	        mItems.RemoveAt(mItems.Count - 1);
-			mHash.Remove(rslt);	
+			if (mUseHashSet) mHash.Remove(rslt);	
 	        if (mItems.Count > 0)
 	        {
 	            int i = 0;
@@ -159,12 +209,15 @@ namespace ThinksquirrelSoftware.Common.Collections
 	        return rslt;
 	    }
 		
-		public bool Contains(T item)
+		public bool Contains(TValue item)
 		{
+			if (!mUseHashSet)
+				throw new InvalidOperationException("Cannot do a Contains() operation without a backing hash set!");
+			
 			return mHash.Contains(item);
 		}
 		
-	    IEnumerator<T> IEnumerable<T>.GetEnumerator()
+	    IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator()
 	    {
 	        foreach (var i in mItems)
 	        {
