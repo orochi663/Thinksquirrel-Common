@@ -7,7 +7,10 @@
 # Authors:
 #       Josh Montoute <josh@thinksquirrel.com>
 #		Emil "AngryAnt" Johansen <Twitter: @AngryAnt>
-# 
+#
+# Original code adapted from the blog post here:
+# http://angryant.com/2011/02/02/assembling-and-assimilating/
+#
 # Copyright (c) 2011-2012, Thinksquirrel Software, LLC
 # All rights reserved.
 #
@@ -26,11 +29,7 @@
 # HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-# Original code adapted from the blog post here:
-# http://angryant.com/2011/02/02/assembling-and-assimilating/
-#
-#
+
 use strict;
 use Getopt::Long;
 use Term::ANSIColor;
@@ -68,5 +67,5 @@ sub BuildAssembly
 	print color ("reset");
 }
 
-BuildAssembly ("library", "'bin/common/Plugins/Thinksquirrel Common/ThinksquirrelCommon.Runtime.dll'", $sourceThinksquirrelCommon, "-v -recurse:$sourceThinksquirrelCommon -d:$debugOptions -r:$assemblyUnityEngine");
-BuildAssembly ("library", "'bin/common/Editor/Thinksquirrel Common/ThinksquirrelCommon.Editor.dll'", $sourceThinksquirrelEditor, "-v -recurse:$sourceThinksquirrelEditor -d:$debugOptions -r:'bin/common/Plugins/Thinksquirrel Common/ThinksquirrelCommon.Runtime.dll',$assemblyUnityEngine,$assemblyUnityEditor");
+BuildAssembly ("library", "'bin/common/Plugins/Thinksquirrel Common/ThinksquirrelCommon.Runtime.dll'", $sourceThinksquirrelCommon, "-v -recurse:$sourceThinksquirrelCommon $debugOptions -r:$assemblyUnityEngine");
+BuildAssembly ("library", "'bin/common/Editor/Thinksquirrel Common/ThinksquirrelCommon.Editor.dll'", $sourceThinksquirrelEditor, "-v -recurse:$sourceThinksquirrelEditor $debugOptions -r:'bin/common/Plugins/Thinksquirrel Common/ThinksquirrelCommon.Runtime.dll',$assemblyUnityEngine,$assemblyUnityEditor");
