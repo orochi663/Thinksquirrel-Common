@@ -48,17 +48,21 @@ namespace ThinksquirrelSoftware.Common.Collections
 	public class KdTree {
 
 /*! \cond PRIVATE */
-		public KdTree[] lr;
+		public FixedArray2<KdTree> lr;
 		public Vector3 pivot;
 		public int pivotIndex;
 		public int axis;
+		
+		private Vector3[] rootPoints;
+		private int[] rootIndices;
+		private NeighborList rootNeighborList;
+		private bool enabled = true;
 		
 		//	Change this value to 2 if you only need two-dimensional X,Y points. The search will
 		//	be quicker in two dimensions.
 		private int numDims = 3;
 		
 		public KdTree(int dimensions) {
-			lr = new KdTree[2];
 			numDims = dimensions;
 		}
 /*! \endcond */
@@ -66,17 +70,32 @@ namespace ThinksquirrelSoftware.Common.Collections
 		/// <summary>
 		/// Make a new tree from a list of points.
 		/// </summary>
-		public static KdTree MakeFromPoints(int dimensions, params Vector3[] points) {
+		public static KdTree MakeFromPoints(int dimensions, Vector3[] points) {
 			int[] indices = Iota(points.Length);
 			return MakeFromPointsInner(0, 0, points.Length - 1, points, indices, dimensions, null);
 		}
 		
 		/// <summary>
-		/// Make a new tree from a list of points, reusing any old KDTree objects.
+		/// Regenerate a tree from a list of points, reusing any old objects from the root.
 		/// </summary>
-		public static KdTree Regenerate(KdTree tree, int dimensions, params Vector3[] points) {
-			int[] indices = Iota(points.Length);
-			return MakeFromPointsInner(0, 0, points.Length - 1, points, indices, dimensions, tree);
+		public static KdTree Regenerate(KdTree root, int dimensions, Vector3[] points) {
+			if (root.rootIndices.Length != points.Length)
+			{
+				root.rootIndices = Iota(points.Length);
+			}
+			else
+			{
+				Iota(root.rootIndices);
+			}
+			return MakeFromPointsInner(0, 0, points.Length - 1, points, root.rootIndices, dimensions, root);
+		}
+		
+		/// <summary>
+		/// Rebalance the tree.
+		/// </summary>
+		public static void Rebalance(KdTree root)
+		{
+			Regenerate(root, root.numDims, root.rootPoints);
 		}
 	
 		//	Recursively build a tree by separating points at plane boundaries.
@@ -87,8 +106,16 @@ namespace ThinksquirrelSoftware.Common.Collections
 						int[] inds,
 						int dimensions,
 						KdTree tree) {
-
+			
+			
 			KdTree root = tree != null ? tree : new KdTree(dimensions);
+			root.enabled = true;
+			
+			if (depth == 0 && root.rootPoints != points)
+			{
+				root.rootPoints = points;
+				root.rootIndices = inds;
+			}
 			
 			root.axis = depth % root.numDims;
 			int splitPoint = FindPivotIndex(points, inds, stIndex, enIndex, root.axis);
@@ -101,9 +128,9 @@ namespace ThinksquirrelSoftware.Common.Collections
 			if (leftEndIndex >= stIndex) {
 				root.lr[0] = MakeFromPointsInner(depth + 1, stIndex, leftEndIndex, points, inds, dimensions, root.lr[0]);
 			}
-			else
+			else if (root.lr[0] != null)
 			{
-				root.lr[0] = null;
+				root.lr[0].enabled = false;
 			}
 			
 			int rightStartIndex = splitPoint + 1;
@@ -111,9 +138,9 @@ namespace ThinksquirrelSoftware.Common.Collections
 			if (rightStartIndex <= enIndex) {
 				root.lr[1] = MakeFromPointsInner(depth + 1, rightStartIndex, enIndex, points, inds, dimensions, root.lr[1]);
 			}
-			else
+			else if (root.lr[1] != null)
 			{
-				root.lr[1] = null;
+				root.lr[1].enabled = false;
 			}
 			
 			return root;
@@ -160,7 +187,7 @@ namespace ThinksquirrelSoftware.Common.Collections
 /*! \cond PRIVATE */
 		
 		// Find a new pivot index from the range by splitting the points that fall either side of its plane.
-		public static int FindPivotIndex(Vector3[] points, int[] inds, int stIndex, int enIndex, int axis) {
+		static int FindPivotIndex(Vector3[] points, int[] inds, int stIndex, int enIndex, int axis) {
 			int splitPoint = FindSplitPoint(points, inds, stIndex, enIndex, axis);
 			// int splitPoint = Random.Range(stIndex, enIndex);
 	
@@ -186,12 +213,18 @@ namespace ThinksquirrelSoftware.Common.Collections
 		}
 		
 		
-		public static int[] Iota(int num) {
+		static void Iota(int[] arr)
+		{
+			for (int i = 0; i < arr.Length; i++)
+			{
+				arr[i] = i;
+			}
+		}
+		
+		static int[] Iota(int num) {
 			int[] result = new int[num];
 			
-			for (int i = 0; i < num; i++) {
-				result[i] = i;
-			}
+			Iota(result);
 			
 			return result;
 		}
@@ -200,110 +233,256 @@ namespace ThinksquirrelSoftware.Common.Collections
 		/// <summary>
 		/// Find the nearest point in the set to the supplied point.
 		/// </summary>
-		public int FindNearest(Vector3 pt) {
-			float bestSqDist = 1000000000f;
-			int bestIndex = -1;
-			
-			Search(pt, ref bestSqDist, ref bestIndex);
-			
-			return bestIndex;
+		public int FindNearest(Vector3 position)
+		{	
+			return FindNearest(position, float.MaxValue);	
 		}
 		
 		/// <summary>
 		/// Find the nearest point in the set to the supplied point, up to the maximum square distance.
 		/// </summary>
-		public int FindNearest(Vector3 pt, float maxSqDist)
+		public int FindNearest(Vector3 position, float maxSqrDistance)
+		{	
+			if (rootNeighborList == null)
+				rootNeighborList = new NeighborList(1);
+			else
+			{
+				rootNeighborList.Clear();
+				rootNeighborList.Capacity = 1;
+			}
+			
+			K_NN(position, HyperRect.Infinite, maxSqrDistance, 0, rootNeighborList);
+			
+			return rootNeighborList.RemoveRoot().pivotIndex;
+		}
+		
+		
+		/// <summary>
+		/// Find the nearest points in the set up to the maximum amount.
+		/// </summary>
+		public int[] FindNearest(Vector3 position, int maxAmount)
 		{
-			float bestSqDist = maxSqDist + Mathf.Epsilon;
-			int bestIndex = -1;
-			
-			Search(pt, ref bestSqDist, ref bestIndex);
-			
-			return bestIndex;
+			return FindNearest(position, maxAmount, float.MaxValue);
 		}
 		
 		/// <summary>
-		/// Find the nearest points in the set up to the maximum amount, within the maximum square distance.
+		/// Find the nearest points in the set up to the maximum amount, up to the maximum square distance.
 		/// </summary>
-		public int[] FindNearest(Vector3 pt, int maxAmount, float maxSqDist)
+		public int[] FindNearest(Vector3 position, int maxAmount, float maxSqrDistance)
 		{
-			float bestSqDist = maxSqDist + Mathf.Epsilon;
-			int[] bestIndices = new int[maxAmount];
-			for(int i = 0; i < maxAmount; i++)
-			{
-				bestIndices[i] = -1;
-			}
+			int[] result = new int[maxAmount];
 			
-			int ptr = 0;
+			FindNearest(position, result, maxAmount, maxSqrDistance);
 			
-			Search(pt, ref bestSqDist, ref bestIndices, ref ptr, maxAmount);
-			
-			return bestIndices;
+			return result;
 		}
 		
-	
-	//	Recursively search the tree.
-		void Search(Vector3 pt, ref float bestSqSoFar, ref int bestIndex) {
-			float mySqDist = (pivot - pt).sqrMagnitude;
-			
-			if (mySqDist < bestSqSoFar) {
-				bestSqSoFar = mySqDist;
-				bestIndex = pivotIndex;
+		/// <summary>
+		/// Find the nearest points in the set up to the maximum amount, up to the maximum square distance.
+		/// </summary>
+		public void FindNearest(Vector3 position, int[] result, int len, float maxSqrDistance)
+		{
+			if (rootNeighborList == null)
+				rootNeighborList = new NeighborList(len);
+			else
+			{
+				rootNeighborList.Clear();
+				rootNeighborList.Capacity = len;
 			}
 			
-			float planeDist = pt[axis] - pivot[axis]; //DistFromSplitPlane(pt, pivot, axis);
+			K_NN(position, HyperRect.Infinite, maxSqrDistance, 0, rootNeighborList);
 			
-			int selector = planeDist <= 0 ? 0 : 1;
-			
-			if (lr[selector] != null) {
-				lr[selector].Search(pt, ref bestSqSoFar, ref bestIndex);
-			}
-			
-			selector = (selector + 1) % 2;
-			
-			float sqPlaneDist = planeDist * planeDist;
-	
-			if ((lr[selector] != null) && (bestSqSoFar > sqPlaneDist)) {
-				lr[selector].Search(pt, ref bestSqSoFar, ref bestIndex);
+			for(int i = 0; i < len; i++)
+			{
+				if (rootNeighborList.Count > 0)
+					result[i++] = rootNeighborList.RemoveRoot().pivotIndex;
+				else
+					result[i++] = -1;
 			}
 		}
-	
-	//	Recursively search the tree for a specified amount of best values.
-		void Search(Vector3 pt, ref float bestSqSoFar, ref int[] bestIndices, ref int ptr, int maxAmount) {
-			float mySqDist = (pivot - pt).sqrMagnitude;
+		
+		/// <summary>
+		/// K-Nearest neighbor algorithm
+		/// </summary>
+		public void K_NN(Vector3 position, HyperRect hr, float maxSqrDist, int level, NeighborList neighbors)
+		{	
+			// Split field of kd
+			int s = level % numDims;
 			
-			if (mySqDist < bestSqSoFar) {
-				bestSqSoFar = mySqDist;
-				bestIndices[ptr] = pivotIndex;
-				ptr++;
-				if (ptr >= maxAmount)
+			// Pivot to target
+			float mySqrDist = (pivot - position).sqrMagnitude;
+			
+			// Cut rectangle into sub-hyperrectangles
+			HyperRect left_hr = hr;
+			HyperRect right_hr = hr;
+			left_hr.max[s] = pivot[s];
+			right_hr.min[s] = pivot[s];
+			
+			// Check to see if target is in the left/right side and set closer/further
+			bool inLeft = position[s] < pivot[s];
+			
+			KdTree closer, further;
+			HyperRect closerRect, furtherRect;
+			
+			if (inLeft)
+			{
+				closer = lr[0];
+				closerRect = left_hr;
+				further = lr[1];
+				furtherRect = right_hr;
+			}
+			else
+			{
+				closer = lr[1];
+				closerRect = right_hr;
+				further = lr[0];
+				furtherRect = left_hr;
+			}
+			
+			// Recursively call nearest neighbor
+			if (closer != null && closer.enabled)
+				closer.K_NN(position, closerRect, maxSqrDist, level + 1, neighbors);
+			
+			//KdTree nearest = neighbors.Peek();
+			float distSqr;
+			
+			if (!neighbors.MaxCapacity)
+			{
+				distSqr = float.MaxValue;
+			}
+			else
+			{
+				distSqr = neighbors.MaxPriority();
+			}
+			
+			// Set maximum distance squared
+			maxSqrDist = Mathf.Min(maxSqrDist, distSqr);
+			
+			// Check to see if a point in the further is within maxSqrDist
+			Vector3 closest = furtherRect.Closest(position);
+			
+			if (Vector3.Distance(closest, position) < Mathf.Sqrt(maxSqrDist))
+			{
+				if (mySqrDist < distSqr)
 				{
-					ptr = 0;
+					//nearest = this;
+					
+					distSqr = mySqrDist;
+					
+					if (neighbors.MaxCapacity)
+					{
+						maxSqrDist = neighbors.MaxPriority();
+					}
+					else
+					{
+						neighbors.Insert(distSqr, this);
+						maxSqrDist = float.MaxValue;
+					}
+				}
+				
+				// Recursively call NN
+				if (further != null && further.enabled)
+					further.K_NN(position, furtherRect, maxSqrDist, level + 1, neighbors);
+				
+				//KdTree tempNearest = neighbors.Peek();
+				float tempDistSqr = neighbors.MaxPriority();
+				
+				if (tempDistSqr < distSqr)
+				{
+					//nearest = tempNearest;
+					distSqr = tempDistSqr;
 				}
 			}
-			
-			float planeDist = pt[axis] - pivot[axis]; //DistFromSplitPlane(pt, pivot, axis);
-			
-			int selector = planeDist <= 0 ? 0 : 1;
-			
-			if (lr[selector] != null) {
-				lr[selector].Search(pt, ref bestSqSoFar, ref bestIndices, ref ptr, maxAmount);
-			}
-			
-			selector = (selector + 1) % 2;
-			
-			float sqPlaneDist = planeDist * planeDist;
-	
-			if ((lr[selector] != null) && (bestSqSoFar > sqPlaneDist)) {
-				lr[selector].Search(pt, ref bestSqSoFar, ref bestIndices, ref ptr, maxAmount);
+			else if (mySqrDist < maxSqrDist)
+			{
+				//nearest = this;
+				distSqr = mySqrDist;
 			}
 		}
+
 		
-	
-	//	Get a point's distance from an axis-aligned plane.
-		float DistFromSplitPlane(Vector3 pt, Vector3 planePt, int axis) {
-			return pt[axis] - planePt[axis];
+		public int DrawDebug(Plane[] frustrum, Material material, Color color, Vector3 center, float distance)
+		{
+			material.SetPass(0);
+		    
+			GL.Color(color);
+			GL.Begin(GL.LINES);
+			
+			int count = Draw(frustrum, center, distance);
+			
+			GL.End();
+		
+			return count;
 		}
+        
+		private int Draw(Plane[] frustum, Vector3 center, float distance)
+        {
+			int count = 0;
+			Vector3 c = center;
+			Vector3 extents = Vector3.zero;
+			switch(this.axis)
+			{
+			case 0:
+				c.x = pivot.x;
+				extents.y = distance;
+				extents.z = distance;
+				break;
+			case 1:
+				c.y = pivot.y;
+				extents.x = distance;
+				extents.z = distance;
+				break;
+			case 2:
+				c.z = pivot.z;
+				extents.x = distance;
+				extents.y = distance;
+				break;
+			}
+			
+			Bounds bounds = new Bounds(c, extents); 
+				
+			bool contains = GeometryUtility.TestPlanesAABB(frustum, bounds);
+			FixedArray8<Vector3> boxCorners = new FixedArray8<Vector3>();
+			
+			boxCorners[0] = bounds.max;
+			boxCorners[1] = new Vector3(bounds.min.x, bounds.max.y, bounds.max.z);
+			boxCorners[2] = new Vector3(bounds.min.x, bounds.max.y, bounds.min.z);
+			boxCorners[3] = new Vector3(bounds.max.x, bounds.max.y, bounds.min.z);
+			boxCorners[4] = new Vector3(bounds.max.x, bounds.min.y, bounds.max.z);
+			boxCorners[5] = new Vector3(bounds.min.x, bounds.min.y, bounds.max.z);
+			boxCorners[6] = bounds.min;
+			boxCorners[7] = new Vector3(bounds.max.x, bounds.min.y, bounds.min.z);
+			
+			
+            // Draw the plane only if it is at least partially in view.
+            if (contains)
+            {
+            	int j1;
+				for (int j = 0; j < 4; ++j)
+				{
+					GL.Vertex3(boxCorners[j].x,boxCorners[j].y,boxCorners[j].z); //top lines
+					j1 = (j+1)%4;
+					GL.Vertex3(boxCorners[j1].x,boxCorners[j1].y,boxCorners[j1].z);
+					j1 = j + 4;
+					GL.Vertex3(boxCorners[j].x,boxCorners[j].y,boxCorners[j].z); //vertical lines
+					GL.Vertex3(boxCorners[j1].x,boxCorners[j1].y,boxCorners[j1].z);
+					GL.Vertex3(boxCorners[j1].x,boxCorners[j1].y,boxCorners[j1].z); //bottom rectangle
+					j1 = 4 + (j+1)%4;
+					GL.Vertex3(boxCorners[j1].x,boxCorners[j1].y,boxCorners[j1].z);
+				}
+				++count;
+
+                // Draw the tree's children, if any
+                foreach (KdTree child in this.lr)
+                {
+					if (child != null && child.enabled)
+                    	count += child.Draw(frustum, center, distance);
+                }
+            }
+			
+			return count;
+        }
+
 		
 		/// <summary>
 		/// Simple output of tree structure - mainly useful for getting a rough idea of how deep the tree is (and therefore how well the splitting heuristic is performing).
@@ -320,6 +499,56 @@ namespace ThinksquirrelSoftware.Common.Collections
 			}
 			
 			return result;
+		}
+	}
+
+	public struct HyperRect
+	{
+		public Vector3 min, max;
+		static HyperRect infinite = new HyperRect(
+					new Vector3(Mathf.NegativeInfinity, Mathf.NegativeInfinity, Mathf.NegativeInfinity),
+					new Vector3(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity));
+				
+		public HyperRect(Vector3 min, Vector3 max)
+		{
+			this.min = min;
+			this.max = max;
+		}
+				
+		public static HyperRect Infinite { get { return infinite; } }
+		
+		public Vector3 Closest(Vector3 point)
+		{
+			Vector3 p = Vector3.zero;
+
+            for (int i = 0; i < 3; ++i)
+            {
+                if (point[i] <= min[i])
+                {
+                    p[i] = min[i];
+                }
+                else if (point[i] >= max[i])
+                {
+                    p[i] = max[i];
+                }
+                else
+                {
+                    p[i] = point[i];
+                }
+            }
+
+            return p;
+		}
+	}
+	
+	public class NeighborList : BinaryHeap<float, KdTree>
+	{		
+		public NeighborList(int capacity) : base(capacity) { }
+		public bool MaxCapacity { get { return this.Count == Capacity; } }
+		
+		new public float MaxPriority()
+		{
+			return Count == 0 ? Mathf.Infinity : (float)base.MaxPriority();
 		}
 	}
 }
