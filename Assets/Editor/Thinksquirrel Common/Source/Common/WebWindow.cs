@@ -33,7 +33,7 @@ using System.Reflection;
 
 public class WebWindow : EditorWindow {
 	
-	static Rect windowRect = new Rect(100,100,800,600);
+	static Rect windowRect = new Rect(100,100,Mathf.Max(Screen.currentResolution.width - 200, 800),Mathf.Max(Screen.currentResolution.height - 200, 600));
 	static BindingFlags fullBinding = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 	static StringComparison ignoreCase = StringComparison.CurrentCultureIgnoreCase;
 	
