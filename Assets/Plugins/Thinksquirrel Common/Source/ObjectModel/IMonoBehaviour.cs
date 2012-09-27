@@ -33,6 +33,7 @@ namespace ThinksquirrelSoftware.Common.ObjectModel
 {
 	public interface IMonoBehaviour
 	{	
+		#if !COMPACT
 		/// MonoBehaviour
 		bool useGUILayout
 		{
@@ -161,5 +162,7 @@ namespace ThinksquirrelSoftware.Common.ObjectModel
 		
 		int GetInstanceID();
 		string ToString();
+		
+		#endif
 	}
 }

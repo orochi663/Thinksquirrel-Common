@@ -44,9 +44,9 @@ namespace ThinksquirrelSoftware.Common.Extensions
 			return (!float.IsNaN(input.x)
 					&& !float.IsNaN(input.y)
 					&& !float.IsNaN(input.z)
-					&& !float.IsInfinity(input.x)
-					&& !float.IsInfinity(input.y)
-					&& !float.IsInfinity(input.z));
+					&& input.x != Mathf.Infinity
+					&& input.y != Mathf.Infinity
+					&& input.z != Mathf.Infinity);
 		}
 		
 		/// <summary>
@@ -56,10 +56,10 @@ namespace ThinksquirrelSoftware.Common.Extensions
 		{
 			return (!float.IsNaN(input.x)
 					&& !float.IsNaN(input.y)
-					&& !float.IsInfinity(input.x)
-					&& !float.IsInfinity(input.y));
+					&& input.x != Mathf.Infinity
+					&& input.y != Mathf.Infinity);
 		}
-		
+#if !COMPACT		
 		/// <summary>
 		/// Calculates the torque applied to a rigidbody. (Extension Method)
 		/// </summary>
@@ -76,7 +76,7 @@ namespace ThinksquirrelSoftware.Common.Extensions
 		{
 			return rigidbody.CalculateTorque(force, position) + force;
 		}
-		
+#endif		
 		/// <summary>
 		/// Calculates the torque applied to a transform. (Extension Method)
 		/// </summary>
