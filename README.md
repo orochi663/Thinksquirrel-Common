@@ -1,5 +1,7 @@
 # Thinksquirrel Common Libraries
 
+** Note: These libraries have been depreciated and are no longer being developed or maintained. **
+
 ### Overview
 
 These libraries provide common functionality between Thinksquirrel Software products. They are not meant for general use, but the code is provided here for debugging/learning/adaptation purposes.
